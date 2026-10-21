@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\ForceJsonResponse;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -11,13 +12,18 @@ return Application::configure(basePath: dirname(__DIR__))
         api: __DIR__ . '/../routes/api/v1.php',
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
-        apiPrefix: config('sanctum.api_prefix', 'api'),
+        then: function () {
+            Route::middleware('api')
+                ->prefix(config('app.api_prefix'))
+                ->group(base_path('routes/api/v1.php'));
+        }
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        $middleware->prepend(ForceJsonResponse::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
             fn (Request $request) => $request->is('api/*') || $request->expectsJson(),
         );
-    })->create();
+    })
+    ->create();
