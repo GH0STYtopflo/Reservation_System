@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+use App\Models\City;
+use App\Policies\CityPolicy;
+use Gate;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\ServiceProvider;
 

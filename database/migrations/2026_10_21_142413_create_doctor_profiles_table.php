@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('last_name');
             $table->boolean('gender'); // True is female, False is male
             $table->string('education');
-            $table->foreignId('city_id')->constrained('cities');
+            $table->foreignId('city_id')->constrained('cities')->nullOnDelete();
             $table->timestampsTz();
         });
     }
