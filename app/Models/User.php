@@ -16,6 +16,8 @@ class User extends Authenticatable
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable, HasApiTokens;
 
+    protected $hidden = ['password'];
+
     protected function casts(): array
     {
         return [
@@ -24,6 +26,10 @@ class User extends Authenticatable
             'role' => Role::class,
         ];
     }
+
+    protected $attributes = [
+        'role' => Role::PATIENT
+    ];
 
     // Relationships
     public function patient_profile(): HasOne
