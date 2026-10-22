@@ -2,11 +2,16 @@
 
 namespace App\Models;
 
+use App\AppointmentStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Appointment extends Model
 {
+    protected $attributes = [
+        'status' => AppointmentStatus::PENDING,
+    ];
+
     public function doctor(): BelongsTo
     {
         return $this->belongsTo(DoctorProfile::class);
@@ -21,6 +26,4 @@ class Appointment extends Model
     {
         return $this->belongsTo(AppointmentType::class);
     }
-
-
 }
