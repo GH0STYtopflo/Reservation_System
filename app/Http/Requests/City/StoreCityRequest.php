@@ -9,11 +9,6 @@ use Illuminate\Support\Facades\Auth;
 
 class StoreCityRequest extends FormRequest
 {
-    public function authorize(): Response
-    {
-        return Auth::user()->role === Role::ADMIN ? Response::allow() : Response::denyAsNotFound();
-    }
-
     public function rules(): array
     {
         return [

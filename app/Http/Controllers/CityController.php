@@ -32,15 +32,15 @@ class CityController extends Controller
     {
         $data = $request->validated();
 
-        $city->update($data);
+        $city->update([
+            'name' => $data['name'] ?? $city->name,
+        ]);
 
         return $city->toResource();
     }
 
     public function destroy(City $city)
     {
-        Gate::authorize('delete', $city);
-
         $city->delete();
 
         return response(null, 204);
