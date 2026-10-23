@@ -21,8 +21,6 @@ Route::prefix('auth')->group(function () {
 
 // The rest of the routes
 Route::middleware('auth:sanctum')->group(function () {
-    Route::resource('cities', CityController::class)->except(['edit', 'create']);
-
     //--------------------------------------------------------------------------------------
     //-------------------------------------- Cities ----------------------------------------
     //--------------------------------------------------------------------------------------
