@@ -13,13 +13,13 @@ return new class extends Migration
     {
         Schema::create('patient_profiles', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users');
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->string('first_name');
             $table->string('last_name');
             $table->boolean('gender'); // True is female, false is male
             $table->timestampTz('birth_date');
             $table->enum('blood_type', ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'])->nullable();
-            $table->foreignId('city_id')->constrained('cities');
+            $table->foreignId('city_id')->nullable()->constrained('cities')->nullOnDelete();
             $table->timestampsTz();
         });
     }

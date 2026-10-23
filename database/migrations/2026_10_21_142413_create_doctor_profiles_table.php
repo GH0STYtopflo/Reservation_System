@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::create('doctor_profiles', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users');
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->string('first_name');
             $table->string('last_name');
             $table->boolean('gender'); // True is female, False is male
             $table->string('education');
-            $table->foreignId('city_id')->constrained('cities')->nullOnDelete();
+            $table->foreignId('city_id')->nullable()->constrained('cities')->nullOnDelete();
             $table->timestampsTz();
         });
     }
