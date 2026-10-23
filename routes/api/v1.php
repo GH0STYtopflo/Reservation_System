@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CityController;
+use App\Http\Controllers\SpecialtyController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -21,6 +22,15 @@ Route::prefix('auth')->group(function () {
 // The rest of the routes
 Route::middleware('auth:sanctum')->group(function () {
     Route::resource('cities', CityController::class)->except(['edit', 'create']);
+
+    //--------------------------------------------------------------------------------------
+    //------------------------------------ Specialties -------------------------------------
+    //--------------------------------------------------------------------------------------
+    Route::resource('specialties', SpecialtyController::class)->only(['index', 'show']);
+
+    Route::resource('specialties', SpecialtyController::class)->only(['store', 'update', 'destroy'])
+        ->middleware('can:admin-access');
+    //--------------------------------------------------------------------------------------
 });
 
 
