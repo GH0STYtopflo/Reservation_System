@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use App\Models\City;
+use App\Models\User;
 use App\Policies\CityPolicy;
 use App\Role;
 use Gate;
@@ -32,13 +32,37 @@ class AppServiceProvider extends ServiceProvider
         //--------------------------------------------------------------------------------------
         //---------------------------- Tier 1 authorization ------------------------------------
         //--------------------------------------------------------------------------------------
-        Gate::define('admin-access', function ($user) {
+        Gate::define('admin-access', function (User $user) {
             return $user->role === Role::ADMIN ? Response::allow() : Response::denyAsNotFound();
         });
 
-        Gate::define('doctor-access', function ($user) {
+        Gate::define('doctor-access', function (User $user) {
             return $user->role === Role::DOCTOR ? Response::allow() : Response::denyAsNotFound();
         });
+
+        Gate::define('patient-access', function (User $user) {
+            return $user->role === Role::PATIENT ? Response::allow() : Response::denyAsNotFound();
+        });
         //--------------------------------------------------------------------------------------
+
+        Gate::define('profile-exists', function (User $user) {
+            if ($user->role === Role::DOCTOR && !$user->doctorProfile()->exists()) {
+                return Response::deny("You must complete your profile before accessing this endpoint.");
+            }
+
+            if ($user->role === Role::PATIENT && !$user->patientProfile()->exists()) {
+                return Response::deny("You must complete your profile before accessing this endpoint.");
+            }
+
+            return Response::allow();
+        });
+
+        Gate::define('doctor-profile-verified', function (User $user) {
+            if ($user->role === Role::DOCTOR && $user->doctorProfile()->verified_at === null) {
+                return Response::deny("Your profile is not verified");
+            }
+
+            return Response::allow();
+        });
     }
 }

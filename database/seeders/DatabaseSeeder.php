@@ -2,24 +2,57 @@
 
 namespace Database\Seeders;
 
+use App\BloodType;
+use App\Models\City;
+use App\Models\Specialty;
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Role;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
-        // User::factory(10)->create();
+        $cities = collect(['Tabriz', 'Tehran', 'Kish', 'Zanjan'])
+            ->mapWithKeys(fn(string $name) => [
+                $name => City::create(['name' => $name]),
+            ]);
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        foreach (['A', 'B', 'C'] as $title) {
+            Specialty::create([
+                'title' => $title,
+                'description' => 'nothing',
+            ]);
+        }
+
+        $patient = User::create([
+            'phone_number' => '00000000000',
+            'role' => Role::PATIENT,
+            'password' => Hash::make('StrongAsHellPass'),
+        ]);
+
+        $patient->patientProfile()->create([
+            'first_name' => 'name',
+            'last_name' => 'name',
+            'gender' => false,
+            'blood_type' => BloodType::ABPlus,
+            'birth_date' => now(),
+            'city_id' => $cities['Tabriz']->id,
+        ]);
+
+        $doctor = User::create([
+            'phone_number' => '11111111111',
+            'role' => Role::DOCTOR,
+            'password' => Hash::make('StrongAsHellPass'),
+        ]);
+
+        $doctor->doctorProfile()->create([
+            'first_name' => 'name',
+            'last_name' => 'name',
+            'gender' => false,
+            'education' => 'idk',
+            'city_id' => $cities['Tehran']->id,
         ]);
     }
 }

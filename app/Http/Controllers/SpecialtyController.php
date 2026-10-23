@@ -6,7 +6,6 @@ use App\Http\Requests\Specialty\StoreSpecialtyRequest;
 use App\Http\Requests\Specialty\UpdateSpecialtyRequest;
 use App\Http\Resources\SpecialtyResource;
 use App\Models\Specialty;
-use Gate;
 
 class SpecialtyController extends Controller
 {

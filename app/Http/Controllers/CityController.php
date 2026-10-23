@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\City\StoreCityRequest;
 use App\Http\Resources\CityResource;
 use App\Models\City;
-use Gate;
 
 class CityController extends Controller
 {

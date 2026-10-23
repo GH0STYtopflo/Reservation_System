@@ -5,7 +5,6 @@ namespace App\Models;
 use App\Role;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -32,7 +31,7 @@ class User extends Authenticatable
     ];
 
     // Relationships
-    public function patient_profile(): HasOne
+    public function patientProfile(): HasOne
     {
         return $this->hasOne(PatientProfile::class);
     }

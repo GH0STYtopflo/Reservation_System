@@ -4,10 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class DoctorProfile extends Model
 {
+    protected $attributes = [
+        'verified_at' => null
+    ];
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -33,8 +38,9 @@ class DoctorProfile extends Model
         return $this->hasMany(Appointment::class, 'doctor_id');
     }
 
-    public function doctorSpecialties(): HasMany
+    public function doctorSpecialties(): BelongsToMany
     {
-        return $this->hasMany(DoctorSpecialty::class, 'doctor_id');
+        return $this->belongsToMany(Specialty::class,
+            'doctor_specialties', 'doctor_id', 'specialty_id');
     }
 }

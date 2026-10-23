@@ -3,12 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Specialty extends Model
 {
-    public function doctorSpecialties(): HasMany
+    public function doctorSpecialties(): BelongsToMany
     {
-        return $this->hasMany(DoctorSpecialty::class);
+        return $this->belongsToMany(DoctorProfile::class,
+            'doctor_specialties', 'specialty_id', 'doctor_id');
     }
 }
