@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CityController;
 use App\Http\Controllers\DoctorProfileController;
+use App\Http\Controllers\PatientProfileController;
 use App\Http\Controllers\SpecialtyController;
 use Illuminate\Support\Facades\Route;
 
@@ -20,7 +21,7 @@ Route::middleware('auth:sanctum')->group(function () {
 // The rest of the routes
 Route::middleware('auth:sanctum')->group(function () {
     //--------------------------------------------------------------------------------------
-    //-------------------------------------- Profiles --------------------------------------
+    //----------------------------------- Doctor Profiles ----------------------------------
     //--------------------------------------------------------------------------------------
 
     Route::middleware('can.any:admin-access,doctor-access')->group(function () {
@@ -31,6 +32,20 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('doctors', [DoctorProfileController::class, 'index']);
     Route::get('doctors/{doctorProfile}', [DoctorProfileController::class, 'show']);
+    //--------------------------------------------------------------------------------------
+
+
+    //--------------------------------------------------------------------------------------
+    //----------------------------------- Patient Profiles ---------------------------------
+    //--------------------------------------------------------------------------------------
+
+    Route::get('patients', [PatientProfileController::class, 'index'])->middleware('can:admin-access');
+
+    Route::post('patients', [PatientProfileController::class, 'store'])->middleware('can.any:admin-access,patient-access');
+
+    Route::get('patients/{patientProfile}', [PatientProfileController::class, 'show']);
+
+    Route::patch('patients/{patientProfile}', [PatientProfileController::class, 'update']);
     //--------------------------------------------------------------------------------------
 
 
