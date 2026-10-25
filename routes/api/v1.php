@@ -3,8 +3,10 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CityController;
 use App\Http\Controllers\DoctorProfileController;
+use App\Http\Controllers\MedicalHistoryController;
 use App\Http\Controllers\PatientProfileController;
 use App\Http\Controllers\SpecialtyController;
+use App\Models\MedicalHistory;
 use Illuminate\Support\Facades\Route;
 
 
@@ -46,6 +48,19 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('patients/{patientProfile}', [PatientProfileController::class, 'show']);
 
     Route::patch('patients/{patientProfile}', [PatientProfileController::class, 'update']);
+    //--------------------------------------------------------------------------------------
+
+
+    //--------------------------------------------------------------------------------------
+    //----------------------------------- MedicalHistory -----------------------------------
+    //--------------------------------------------------------------------------------------
+    Route::get('patients/{patientProfile}/medical_histories', [MedicalHistoryController::class, 'index']);
+
+    Route::get('patients/{patientProfile}/medical_histories/{medicalHistory}', [MedicalHistoryController::class, 'show']);
+
+    Route::post('patients/{patientProfile}/medical_histories', [MedicalHistoryController::class, 'store']);
+
+    Route::patch('patients/{patientProfile}/medical_histories/{medicalHistory}', [MedicalHistoryController::class, 'update']);
     //--------------------------------------------------------------------------------------
 
 

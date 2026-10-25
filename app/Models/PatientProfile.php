@@ -23,7 +23,7 @@ class PatientProfile extends Model
         return $this->hasMany(Appointment::class);
     }
 
-    public function medicalHistory(): HasMany
+    public function medicalHistories(): HasMany
     {
         return $this->hasMany(MedicalHistory::class, 'patient_id');
     }
