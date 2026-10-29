@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\AvailabilityController;
 use App\Http\Controllers\CityController;
 use App\Http\Controllers\DoctorProfileController;
 use App\Http\Controllers\MedicalHistoryController;
@@ -9,6 +10,10 @@ use App\Http\Controllers\SpecialtyController;
 use App\Models\MedicalHistory;
 use Illuminate\Support\Facades\Route;
 
+
+Route::get('test', function () {
+    return \App\Models\Availability::get()->toResourceCollection();
+});
 
 // Auth - kinda an anomaly
 Route::middleware(['guest', 'throttle:10,1'])->group(function () {
@@ -62,6 +67,27 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::patch('patients/{patientProfile}/medical_histories/{medicalHistory}', [MedicalHistoryController::class, 'update']);
     //--------------------------------------------------------------------------------------
+
+
+
+    //--------------------------------------------------------------------------------------
+    //----------------------------------- Availabilities -----------------------------------
+    //--------------------------------------------------------------------------------------
+
+    Route::post('doctors/{doctorProfile}/availabilities', [AvailabilityController::class, 'store']);
+
+    Route::delete('doctors/{doctorProfile}/availabilities/{availability}', [AvailabilityController::class, 'destroy']);
+
+    Route::get('doctors/{doctorProfile}/availabilities/{availability}', [AvailabilityController::class, 'show']);
+
+    Route::patch('doctors/{doctorProfile}/availabilities/{availability}', [AvailabilityController::class, 'update']);
+
+    Route::get('doctors/{doctorProfile}/available-slots', [AvailabilityController::class, 'indexAvailableSlots']);
+
+    Route::get('doctors/{doctorProfile}/availabilities', [AvailabilityController::class, 'index']);
+
+    //--------------------------------------------------------------------------------------
+
 
 
     Route::middleware('can:profile-exists')->group(function () {

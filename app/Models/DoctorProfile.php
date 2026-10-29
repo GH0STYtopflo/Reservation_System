@@ -25,7 +25,7 @@ class DoctorProfile extends Model
 
     public function availabilities(): HasMany
     {
-        return $this->hasMany(Availability::class);
+        return $this->hasMany(Availability::class, 'doctor_id');
     }
 
     public function unavailabilities(): HasMany

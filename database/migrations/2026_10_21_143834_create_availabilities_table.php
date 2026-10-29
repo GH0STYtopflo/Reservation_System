@@ -1,5 +1,6 @@
 <?php
 
+use App\AvailabilityDefType;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,9 +14,11 @@ return new class extends Migration {
         Schema::create('availabilities', function (Blueprint $table) {
             $table->id();
             $table->foreignId('doctor_id')->constrained('doctor_profiles');
-            $table->string('rrule');
-            $table->timeTz('start_at');
-            $table->timeTz('end_at');
+            $table->enum('type', [AvailabilityDefType::ONCE, AvailabilityDefType::RECURRING]);
+            $table->string('rrule')->nullable();
+            $table->dateTimeTz('date')->nullable();
+            $table->timeTz('shift_start_at');
+            $table->timeTz('shift_end_at');
             $table->timestampsTz();
         });
     }
