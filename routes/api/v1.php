@@ -7,6 +7,7 @@ use App\Http\Controllers\DoctorProfileController;
 use App\Http\Controllers\MedicalHistoryController;
 use App\Http\Controllers\PatientProfileController;
 use App\Http\Controllers\SpecialtyController;
+use App\Http\Controllers\UnavailabilityController;
 use App\Models\MedicalHistory;
 use Illuminate\Support\Facades\Route;
 
@@ -89,6 +90,13 @@ Route::middleware('auth:sanctum')->group(function () {
     //--------------------------------------------------------------------------------------
 
 
+    //--------------------------------------------------------------------------------------
+    //----------------------------------- Unavailabilities ---------------------------------
+    //--------------------------------------------------------------------------------------
+
+    Route::post('doctors/{doctorProfile}/unavailabilities', [UnavailabilityController::class, 'store']);
+
+    //--------------------------------------------------------------------------------------
 
     Route::middleware('can:profile-exists')->group(function () {
         //--------------------------------------------------------------------------------------
