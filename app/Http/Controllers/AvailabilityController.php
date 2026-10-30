@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\AppointmentStatus;
+use App\Actions\MakeSlots;
+use App\Actions\RulesIntersect;
 use App\Enums\AvailabilityDefType;
-use App\Enums\DayOfWeek;
 use App\Http\Requests\Availabilities\IndexAvailableSlotsRequest;
 use App\Http\Requests\Availabilities\StoreAvailabilityRequest;
 use App\Http\Requests\Availabilities\UpdateAvailabilityRequest;
@@ -39,7 +39,7 @@ class AvailabilityController extends Controller
                 'type' => $data['type'],
             ])->refresh();
 
-            if (self::intersects($doctorProfile, $av)) {
+            if (RulesIntersect::execute($doctorProfile, $av)) {
                 return Response::json(['message' => 'conflicting rules'], 409);
             }
 
@@ -57,7 +57,7 @@ class AvailabilityController extends Controller
                     'type' => $data['type'],
                 ])->refresh();
 
-                if (self::intersects($doctorProfile, $av)) {
+                if (RulesIntersect::execute($doctorProfile, $av)) {
                     return Response::json(['message' => 'conflicting rules'], 409);
                 }
 
@@ -67,56 +67,6 @@ class AvailabilityController extends Controller
 
             return AvailabilityResource::collection($array);
         }
-    }
-
-    public static function intersects(DoctorProfile $doctorProfile, Availability $new): bool
-    {
-        foreach ($doctorProfile->availabilities as $av) {
-            $avRecurring = $av->type === AvailabilityDefType::RECURRING;
-            $newRecurring = $new->type === AvailabilityDefType::RECURRING;
-
-            if (!($avRecurring || $newRecurring)) {
-                if (Carbon::parse($av->date)->format('Y-m-d') !== Carbon::parse($new->date)->format('Y-m-d')) {
-                    continue;
-                }
-            } else {
-                $recurring = $avRecurring ? $av : $new;
-                $other = $avRecurring ? $new : $av;
-
-                $days = explode(',', explode(';', $recurring->rrule->rfcString())[1]);
-                $days[0] = substr($days[0], 6);
-
-                $day = $other->type === AvailabilityDefType::RECURRING
-                    ? explode(',', explode(';', $other->rrule->rfcString())[1])
-                    : [DayOfWeek::from(Carbon::parse($other->date)->dayOfWeek)->name];
-
-                if ($other->type === AvailabilityDefType::RECURRING) {
-                    $day[0] = substr($day[0], 6);
-                }
-
-                if (!self::daysIntersect($days, $day)) {
-                    continue;
-                }
-            }
-
-            if (self::hoursIntersect(
-                [$av->shift_start_at, $av->shift_end_at],
-                [$new->shift_start_at, $new->shift_end_at],
-            )) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-    public static function hoursIntersect(array $h, array $hNew): bool
-    {
-        return !($hNew[1] < $h[0] || $hNew[0] > $h[1]);
-    }
-
-    public static function daysIntersect(array $d, array $dNew): bool
-    {
-        return !empty(array_intersect($dNew, $d));
     }
 
     public function show(DoctorProfile $doctorProfile, Availability $availability)
@@ -145,7 +95,7 @@ class AvailabilityController extends Controller
             $availability->date = $data['new_date'] ?? $availability->date;
         }
 
-        if (self::intersects($doctorProfile, $availability)) {
+        if (RulesIntersect::execute($doctorProfile, $availability)) {
             return Response::json(['message' => 'conflicting rules'], 409);
         }
 
@@ -182,7 +132,7 @@ class AvailabilityController extends Controller
 
         $slots = [];
         foreach ($availabilities as $availability) {
-            $slots += $this->makeSlots($availability, $date);
+            $slots += MakeSlots::execute($availability, $date);
         }
 
         return Response::json([
@@ -191,37 +141,5 @@ class AvailabilityController extends Controller
                 'slots' => $slots,
             ],
         ]);
-    }
-
-    private function makeSlots(Availability $availability, Carbon $date): array
-    {
-        $start = Carbon::parse($availability->shift_start_at);
-        $end = Carbon::parse($availability->shift_end_at);
-
-        $array = [];
-        while ($start->lt($end)) {
-            if ($this->slotAvailable($date->setTimeFromTimeString($start->toTimeString()), $availability->doctor)) {
-                $array[] = $start->toTimeString();
-            }
-
-            $start = $start->addMinutes(20);
-        }
-
-        return $array;
-    }
-
-    private function slotAvailable(Carbon $timestamp, DoctorProfile $doctorProfile): bool
-    {
-        return !(($doctorProfile->unavailabilities()
-                ->whereValueBetween($timestamp->toAtomString(), ['start_at', 'end_at'])
-                ->exists()
-
-            ||
-
-            $doctorProfile->appointments()
-                ->where('date', $timestamp->toDateString())
-                ->whereValueBetween($timestamp->toTimeString(), ['start_at', 'end_at'])
-                ->whereNot('status', AppointmentStatus::CANCELLED)
-                ->exists()));
     }
 }
