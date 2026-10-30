@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\DoctorProfile;
 
-use App\Role;
+use App\Enums\Role;
 use Auth;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;

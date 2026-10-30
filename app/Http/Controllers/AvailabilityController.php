@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\AppointmentStatus;
-use App\AvailabilityDefType;
-use App\DayOfWeek;
+use App\Enums\AppointmentStatus;
+use App\Enums\AvailabilityDefType;
+use App\Enums\DayOfWeek;
 use App\Http\Requests\Availabilities\IndexAvailableSlotsRequest;
 use App\Http\Requests\Availabilities\StoreAvailabilityRequest;
 use App\Http\Requests\Availabilities\UpdateAvailabilityRequest;

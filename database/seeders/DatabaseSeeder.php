@@ -2,11 +2,11 @@
 
 namespace Database\Seeders;
 
-use App\BloodType;
+use App\Enums\BloodType;
+use App\Enums\Role;
 use App\Models\City;
 use App\Models\Specialty;
 use App\Models\User;
-use App\Role;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 

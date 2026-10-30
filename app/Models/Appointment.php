@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\AppointmentStatus;
+use App\Enums\AppointmentStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 

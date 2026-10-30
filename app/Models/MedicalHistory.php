@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\HistoryType;
+use App\Enums\HistoryType;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 

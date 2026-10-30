@@ -2,9 +2,9 @@
 
 namespace App\Providers;
 
+use App\Enums\Role;
 use App\Models\User;
 use App\Policies\CityPolicy;
-use App\Role;
 use Gate;
 use Illuminate\Auth\Access\Response;
 use Illuminate\Database\Eloquent\Model;

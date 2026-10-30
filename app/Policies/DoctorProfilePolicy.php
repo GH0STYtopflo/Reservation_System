@@ -2,9 +2,9 @@
 
 namespace App\Policies;
 
+use App\Enums\Role;
 use App\Models\DoctorProfile;
 use App\Models\User;
-use App\Role;
 use Illuminate\Auth\Access\Response;
 
 class DoctorProfilePolicy

@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\Role;
 use App\Http\Requests\DoctorProfile\StoreProfileRequest;
 use App\Http\Requests\DoctorProfile\UpdateDoctorProfileRequest;
 use App\Http\Requests\DoctorProfile\UpdateDoctorSpecialtiesRequest;
 use App\Http\Resources\DoctorProfileResource;
 use App\Models\DoctorProfile;
 use App\Models\User;
-use App\Role;
 use Auth;
 use DB;
 use Gate;

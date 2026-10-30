@@ -2,9 +2,8 @@
 
 namespace App\Http\Requests\PatientProfile;
 
-use App\Role;
+use App\Enums\Role;
 use Auth;
-use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 

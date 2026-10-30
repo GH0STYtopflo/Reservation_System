@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\Availabilities;
 
-use App\AvailabilityDefType;
+use App\Enums\AvailabilityDefType;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
