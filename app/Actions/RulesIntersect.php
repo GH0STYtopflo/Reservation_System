@@ -51,13 +51,13 @@ class RulesIntersect implements Action
         return false;
     }
 
-    public static function hoursIntersect(array $h, array $hNew): bool
-    {
-        return !($hNew[1] < $h[0] || $hNew[0] > $h[1]);
-    }
-
     public static function daysIntersect(array $d, array $dNew): bool
     {
         return !empty(array_intersect($dNew, $d));
+    }
+
+    public static function hoursIntersect(array $h, array $hNew): bool
+    {
+        return !($hNew[1] < $h[0] || $hNew[0] > $h[1]);
     }
 }

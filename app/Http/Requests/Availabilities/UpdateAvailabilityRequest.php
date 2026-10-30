@@ -26,8 +26,8 @@ class UpdateAvailabilityRequest extends FormRequest
             'new_date' => [
                 'nullable',
                 Rule::prohibitedIf(function () {
-                return $this->route('availability')->type === AvailabilityDefType::RECURRING;
-            }) ,
+                    return $this->route('availability')->type === AvailabilityDefType::RECURRING;
+                }),
                 'date', 'date_format:Y-m-d'
             ],
 

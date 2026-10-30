@@ -2,7 +2,6 @@
 
 namespace App\Actions;
 
-use App\Actions\Action;
 use App\Models\Availability;
 use Carbon\Carbon;
 

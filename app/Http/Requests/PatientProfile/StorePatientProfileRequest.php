@@ -23,8 +23,8 @@ class StorePatientProfileRequest extends FormRequest
                     return Auth::user()->role !== Role::ADMIN;
                 }),
                 Rule::requiredIf(function () {
-                return Auth::user()->role === Role::ADMIN;
-            })]
+                    return Auth::user()->role === Role::ADMIN;
+                })]
         ];
     }
 }

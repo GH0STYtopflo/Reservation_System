@@ -7,7 +7,6 @@ use App\Http\Requests\Unavailabilities\UpdateUnavailabilityRequest;
 use App\Models\Appointment;
 use App\Models\DoctorProfile;
 use App\Models\Unavailability;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
 
 class UnavailabilityController extends Controller
@@ -51,7 +50,7 @@ class UnavailabilityController extends Controller
         return $unavailability->toResource();
     }
 
-    public function update(UpdateUnavailabilityRequest $request, DoctorProfile $doctorProfile,Unavailability $unavailability)
+    public function update(UpdateUnavailabilityRequest $request, DoctorProfile $doctorProfile, Unavailability $unavailability)
     {
         $unavailability->fill($request->validated());
 

@@ -36,7 +36,7 @@ class MedicalHistoryController extends Controller
     }
 
 
-    public function update(UpdateHistoryRequest $request, PatientProfile $patientProfile , MedicalHistory $medicalHistory)
+    public function update(UpdateHistoryRequest $request, PatientProfile $patientProfile, MedicalHistory $medicalHistory)
     {
         Gate::authorize('crud', [MedicalHistory::class, $patientProfile]);
 

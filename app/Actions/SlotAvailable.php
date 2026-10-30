@@ -2,7 +2,6 @@
 
 namespace App\Actions;
 
-use App\Actions\Action;
 use App\Enums\AppointmentStatus;
 use App\Models\DoctorProfile;
 use Carbon\Carbon;

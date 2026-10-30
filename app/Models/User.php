@@ -16,6 +16,21 @@ class User extends Authenticatable
     use HasFactory, Notifiable, HasApiTokens;
 
     protected $hidden = ['password'];
+    protected $attributes = [
+        'role' => Role::PATIENT
+    ];
+
+    public function patientProfile(): HasOne
+    {
+        return $this->hasOne(PatientProfile::class);
+    }
+
+    // Relationships
+
+    public function doctorProfile(): HasOne
+    {
+        return $this->hasOne(DoctorProfile::class);
+    }
 
     protected function casts(): array
     {
@@ -24,20 +39,5 @@ class User extends Authenticatable
             'password' => 'hashed',
             'role' => Role::class,
         ];
-    }
-
-    protected $attributes = [
-        'role' => Role::PATIENT
-    ];
-
-    // Relationships
-    public function patientProfile(): HasOne
-    {
-        return $this->hasOne(PatientProfile::class);
-    }
-
-    public function doctorProfile(): HasOne
-    {
-        return $this->hasOne(DoctorProfile::class);
     }
 }

@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests\MedicalHistory;
 
-use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateHistoryRequest extends FormRequest
