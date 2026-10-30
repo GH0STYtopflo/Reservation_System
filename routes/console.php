@@ -2,6 +2,7 @@
 
 use App\Enums\AvailabilityDefType;
 use App\Enums\Role;
+use App\Jobs\SendAppointmentNotification;
 use App\Models\Appointment;
 use App\Models\Availability;
 use App\Models\Unavailability;
@@ -55,7 +56,7 @@ Schedule::call(function () {
     $appointments = Appointment::whereDate('start_at', today()->addDay())->get();
 
     foreach ($appointments as $appointment) {
-        $appointment->patient->user->notify(new AppointmentDueTomorrow($appointment));
+        SendAppointmentNotification::dispatch($appointment->patient->user, $appointment);
     }
 })
     ->name('Appointment reminder')
