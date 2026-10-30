@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Casts\RRuleCast;
-use App\Casts\TimeCast;
 use App\Enums\AvailabilityDefType;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;

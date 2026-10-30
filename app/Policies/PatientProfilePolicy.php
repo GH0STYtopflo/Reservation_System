@@ -17,10 +17,9 @@ class PatientProfilePolicy
             ? Response::allow() : Response::deny('You do not have permission to view this profile.');
     }
 
-
     public function update(User $user, PatientProfile $patientProfile): Response
     {
-        return ($user->role === Role::ADMIN || $user->is($patientProfile->user)
-            ? Response::allow() : Response::deny('You do not have permission to update this profile.'));
+        return $user->role === Role::ADMIN || $user->is($patientProfile->user)
+            ? Response::allow() : Response::deny('You do not have permission to update this profile.');
     }
 }

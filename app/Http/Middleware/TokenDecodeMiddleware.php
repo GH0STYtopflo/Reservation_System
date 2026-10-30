@@ -11,11 +11,11 @@ class TokenDecodeMiddleware
     /**
      * Handle an incoming request.
      *
-     * @param Closure(Request): (Response) $next
+     * @param  Closure(Request): (Response)  $next
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $request->headers->set('Authorization', 'Bearer ' . base64_decode($request->bearerToken()));
+        $request->headers->set('Authorization', 'Bearer '.base64_decode($request->bearerToken()));
 
         return $next($request);
     }

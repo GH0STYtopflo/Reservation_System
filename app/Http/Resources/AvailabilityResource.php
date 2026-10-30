@@ -20,11 +20,11 @@ class AvailabilityResource extends JsonResource
             'type' => $this->type,
         ];
 
-        if (!empty($this->rrule)) {
+        if (! empty($this->rrule)) {
             $array['rrule'] = ['rfc' => $this->rrule->rfcString(), 'human_readable' => $this->rrule->humanReadable()];
         }
 
-        if (!empty($this->date)) {
+        if (! empty($this->date)) {
             $array['date'] = $this->date;
         }
 

@@ -19,7 +19,7 @@ class DoctorProfileController extends Controller
     {
         $doctors = DoctorProfile::get();
 
-        return doctorProfileResource::collection($doctors);
+        return DoctorProfileResource::collection($doctors);
     }
 
     public function show(DoctorProfile $doctorProfile)

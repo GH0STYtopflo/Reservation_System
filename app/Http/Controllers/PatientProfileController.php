@@ -40,7 +40,6 @@ class PatientProfileController extends Controller
         return $patientProfile->load('city')->unsetRelation('user')->toResource();
     }
 
-
     public function update(UpdatePatientProfileRequest $request, PatientProfile $patientProfile)
     {
         Gate::authorize('update', $patientProfile);

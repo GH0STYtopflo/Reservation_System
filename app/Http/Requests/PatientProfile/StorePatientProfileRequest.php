@@ -24,7 +24,7 @@ class StorePatientProfileRequest extends FormRequest
                 }),
                 Rule::requiredIf(function () {
                     return Auth::user()->role === Role::ADMIN;
-                })]
+                })],
         ];
     }
 }

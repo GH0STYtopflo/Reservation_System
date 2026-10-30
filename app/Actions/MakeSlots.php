@@ -7,8 +7,7 @@ use Carbon\Carbon;
 
 class MakeSlots implements Action
 {
-
-    public function execute(Availability $availability, Carbon $date): array
+    public static function execute(Availability $availability, Carbon $date): array
     {
         $start = Carbon::parse($availability->shift_start_at);
         $end = Carbon::parse($availability->shift_end_at);

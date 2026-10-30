@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class DoctorProfile extends Model
 {
     protected $attributes = [
-        'verified_at' => null
+        'verified_at' => null,
     ];
 
     public function user(): BelongsTo

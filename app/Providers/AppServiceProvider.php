@@ -4,7 +4,6 @@ namespace App\Providers;
 
 use App\Enums\Role;
 use App\Models\User;
-use App\Policies\CityPolicy;
 use Gate;
 use Illuminate\Auth\Access\Response;
 use Illuminate\Database\Eloquent\Model;
@@ -28,10 +27,9 @@ class AppServiceProvider extends ServiceProvider
         // We can be responsible about the data we feed into our model instances
         Model::unguard();
 
-
-        //--------------------------------------------------------------------------------------
-        //---------------------------- Tier 1 authorization ------------------------------------
-        //--------------------------------------------------------------------------------------
+        // --------------------------------------------------------------------------------------
+        // ---------------------------- Tier 1 authorization ------------------------------------
+        // --------------------------------------------------------------------------------------
         Gate::define('admin-access', function (User $user) {
             return $user->role === Role::ADMIN ? Response::allow() : Response::denyAsNotFound();
         });
@@ -43,15 +41,15 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('patient-access', function (User $user) {
             return $user->role === Role::PATIENT ? Response::allow() : Response::denyAsNotFound();
         });
-        //--------------------------------------------------------------------------------------
+        // --------------------------------------------------------------------------------------
 
         Gate::define('profile-exists', function (User $user) {
-            if ($user->role === Role::DOCTOR && !$user->doctorProfile()->exists()) {
-                return Response::deny("You must complete your profile before accessing this endpoint.");
+            if ($user->role === Role::DOCTOR && ! $user->doctorProfile()->exists()) {
+                return Response::deny('You must complete your profile before accessing this endpoint.');
             }
 
-            if ($user->role === Role::PATIENT && !$user->patientProfile()->exists()) {
-                return Response::deny("You must complete your profile before accessing this endpoint.");
+            if ($user->role === Role::PATIENT && ! $user->patientProfile()->exists()) {
+                return Response::deny('You must complete your profile before accessing this endpoint.');
             }
 
             return Response::allow();
@@ -59,7 +57,7 @@ class AppServiceProvider extends ServiceProvider
 
         Gate::define('doctor-profile-verified', function (User $user) {
             if ($user->role === Role::DOCTOR && $user->doctorProfile()->verified_at === null) {
-                return Response::deny("Your profile is not verified");
+                return Response::deny('Your profile is not verified');
             }
 
             return Response::allow();

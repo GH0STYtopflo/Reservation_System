@@ -15,7 +15,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $cities = collect(['Tabriz', 'Tehran', 'Kish', 'Zanjan'])
-            ->mapWithKeys(fn(string $name) => [
+            ->mapWithKeys(fn (string $name) => [
                 $name => City::create(['name' => $name]),
             ]);
 

@@ -26,7 +26,7 @@ class AuthController extends Controller
             ]);
         }
 
-        abort(401, "Invalid credentials");
+        abort(401, 'Invalid credentials');
     }
 
     public function register(RegisterRequest $request)

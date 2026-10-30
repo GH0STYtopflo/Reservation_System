@@ -27,14 +27,12 @@ class MedicalHistoryController extends Controller
         return $patientProfile->refresh()->toResource();
     }
 
-
     public function show(PatientProfile $patientProfile, MedicalHistory $medicalHistory)
     {
         Gate::authorize('crud', [MedicalHistory::class, $patientProfile]);
 
         return $medicalHistory->toResource();
     }
-
 
     public function update(UpdateHistoryRequest $request, PatientProfile $patientProfile, MedicalHistory $medicalHistory)
     {
@@ -47,7 +45,6 @@ class MedicalHistoryController extends Controller
             'description' => $data['description'] ?? $medicalHistory->description,
             'type' => $data['type'] ?? $medicalHistory->type,
         ]);
-
 
         return $medicalHistory->refresh()->toResource();
     }

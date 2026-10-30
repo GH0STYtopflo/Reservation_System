@@ -22,15 +22,14 @@ class AvailabilityController extends Controller
         return $doctorProfile->availabilities->toResourceCollection();
     }
 
-
     public function store(StoreAvailabilityRequest $request, DoctorProfile $doctorProfile)
     {
         $data = $request->validated();
 
         if ($data['type'] == AvailabilityDefType::RECURRING->value) {
-            $rstr = "FREQ=WEEKLY;" . "BYDAY=" . implode(",", $data['days_of_week']);
+            $rstr = 'FREQ=WEEKLY;'.'BYDAY='.implode(',', $data['days_of_week']);
 
-            $rule = new RRule($rstr, "00:00:00"); // cool we have a rrule instance.
+            $rule = new RRule($rstr, '00:00:00'); // cool we have a rrule instance.
 
             $av = $doctorProfile->availabilities()->make([
                 'rrule' => $rule,
@@ -84,7 +83,7 @@ class AvailabilityController extends Controller
         ]);
 
         if ($availability->type == AvailabilityDefType::RECURRING) {
-            if (!empty($request->validated()['new_days'])) {
+            if (! empty($request->validated()['new_days'])) {
                 $ruleArr = $availability->rrule->getRule();
 
                 $ruleArr['BYDAY'] = $data['new_days'] ?? $ruleArr['BYDAY'];
@@ -136,8 +135,8 @@ class AvailabilityController extends Controller
         }
 
         return Response::json([
-            "data" => [
-                "date" => $date->toAtomString(),
+            'data' => [
+                'date' => $date->toAtomString(),
                 'slots' => $slots,
             ],
         ]);

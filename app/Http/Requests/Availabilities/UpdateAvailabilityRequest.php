@@ -14,13 +14,13 @@ class UpdateAvailabilityRequest extends FormRequest
             'shift_start_at' => [
                 'nullable',
                 'date',
-                'date_format:H:i'
+                'date_format:H:i',
             ],
 
             'shift_end_at' => [
                 'nullable',
                 'date',
-                'date_format:H:i'
+                'date_format:H:i',
             ],
 
             'new_date' => [
@@ -28,7 +28,7 @@ class UpdateAvailabilityRequest extends FormRequest
                 Rule::prohibitedIf(function () {
                     return $this->route('availability')->type === AvailabilityDefType::RECURRING;
                 }),
-                'date', 'date_format:Y-m-d'
+                'date', 'date_format:Y-m-d',
             ],
 
             'new_days' => [
@@ -37,13 +37,13 @@ class UpdateAvailabilityRequest extends FormRequest
                 'min:1',
                 Rule::prohibitedIf(function () {
                     return $this->route('availability')->type === AvailabilityDefType::ONCE;
-                })
+                }),
             ],
             'new_days.*' => [
                 'required',
                 'string',
-                'in:MO,TU,WE,TH,FR,SA,SU'
-            ]
+                'in:MO,TU,WE,TH,FR,SA,SU',
+            ],
         ];
     }
 }

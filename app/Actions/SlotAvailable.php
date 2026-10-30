@@ -10,9 +10,9 @@ class SlotAvailable implements Action
 {
     public static function execute(Carbon $timestamp, DoctorProfile $doctorProfile): bool
     {
-        return !(($doctorProfile->unavailabilities()
-                ->whereValueBetween($timestamp->toAtomString(), ['start_at', 'end_at'])
-                ->exists()
+        return ! (($doctorProfile->unavailabilities()
+            ->whereValueBetween($timestamp->toAtomString(), ['start_at', 'end_at'])
+            ->exists()
 
             ||
 

@@ -21,8 +21,8 @@ class UnavailabilityController extends Controller
         $data = $request->validated();
         $unav = $doctorProfile->unavailabilities()->make($data);
 
-        if (!self::isValid($unav)) {
-            return Response::json(['message' => "Conflicting unavailability definition"], 409);
+        if (! self::isValid($unav)) {
+            return Response::json(['message' => 'Conflicting unavailability definition'], 409);
         }
 
         $unav->save();
@@ -32,7 +32,7 @@ class UnavailabilityController extends Controller
 
     private static function isValid(Unavailability $unavailability): bool
     {
-        return !(Appointment::where(
+        return ! (Appointment::where(
             'start_at',
             '<=',
             $unavailability->end_at
@@ -54,8 +54,8 @@ class UnavailabilityController extends Controller
     {
         $unavailability->fill($request->validated());
 
-        if (!self::isValid($unavailability)) {
-            return Response::json(['message' => "Conflicting unavailability definition"], 409);
+        if (! self::isValid($unavailability)) {
+            return Response::json(['message' => 'Conflicting unavailability definition'], 409);
         }
 
         $unavailability->save();

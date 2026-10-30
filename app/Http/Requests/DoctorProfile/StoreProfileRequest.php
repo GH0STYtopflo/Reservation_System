@@ -23,8 +23,8 @@ class StoreProfileRequest extends FormRequest
             'city_id' => ['required', 'integer', 'exists:cities,id'],
 
             'user_id' => [
-                Rule::requiredIf(fn() => Auth::user()->role === Role::ADMIN),
-                Rule::prohibitedIf(fn() => Auth::user()->role !== Role::ADMIN),
+                Rule::requiredIf(fn () => Auth::user()->role === Role::ADMIN),
+                Rule::prohibitedIf(fn () => Auth::user()->role !== Role::ADMIN),
                 'integer',
                 'exists:users,id',
             ],

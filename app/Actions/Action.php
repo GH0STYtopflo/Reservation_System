@@ -2,6 +2,4 @@
 
 namespace App\Actions;
 
-interface Action
-{
-}
+interface Action {}
