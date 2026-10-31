@@ -8,111 +8,117 @@ use App\Http\Controllers\MedicalHistoryController;
 use App\Http\Controllers\PatientProfileController;
 use App\Http\Controllers\SpecialtyController;
 use App\Http\Controllers\UnavailabilityController;
-use App\Models\Availability;
-use App\Models\MedicalHistory;
 use Illuminate\Support\Facades\Route;
 
-Route::get('test', function () {
-    return Availability::get()->toResourceCollection();
-});
+/*
+|--------------------------------------------------------------------------
+| Authentication
+|--------------------------------------------------------------------------
+*/
 
-// Auth - kinda an anomaly
 Route::middleware(['guest', 'throttle:10,1'])->group(function () {
     Route::post('auth:login', [AuthController::class, 'login'])->name('login');
     Route::post('auth:register', [AuthController::class, 'register']);
 });
 
+Route::post('auth:logout', [AuthController::class, 'logout'])
+    ->middleware('auth:sanctum');
+
+
+/*
+|--------------------------------------------------------------------------
+| Public Routes
+|--------------------------------------------------------------------------
+*/
+
+Route::resource('doctors', DoctorProfileController::class)
+    ->only(['index', 'show']);
+
+Route::get('doctors/{doctor}/availability', [
+    AvailabilityController::class,
+    'indexAvailableSlots',
+]);
+
+Route::resource('cities', CityController::class)
+    ->only(['index', 'show']);
+
+Route::resource('specialties', SpecialtyController::class)
+    ->only(['index', 'show']);
+
+/*
+|--------------------------------------------------------------------------
+| Authenticated Routes
+|--------------------------------------------------------------------------
+*/
+
 Route::middleware('auth:sanctum')->group(function () {
-    Route::post('auth:logout', [AuthController::class, 'logout']);
-});
 
-// The rest of the routes
-Route::middleware('auth:sanctum')->group(function () {
-    // --------------------------------------------------------------------------------------
-    // ----------------------------------- Doctor Profiles ----------------------------------
-    // --------------------------------------------------------------------------------------
+    /*
+    |--------------------------------------------------------------------------
+    | Patients
+    |--------------------------------------------------------------------------
+    */
 
-    Route::middleware('can.any:admin-access,doctor-access')->group(function () {
-        Route::post('doctors', [DoctorProfileController::class, 'store'])->name('doctors.store');
-        Route::patch('doctors/{doctorProfile}', [DoctorProfileController::class, 'update']);
-        Route::put('doctors/{doctorProfile}/specialties', [DoctorProfileController::class, 'updateDoctorSpecialties']);
-    });
-
-    Route::get('doctors', [DoctorProfileController::class, 'index']);
-    Route::get('doctors/{doctorProfile}', [DoctorProfileController::class, 'show']);
-    // --------------------------------------------------------------------------------------
-
-    // --------------------------------------------------------------------------------------
-    // ----------------------------------- Patient Profiles ---------------------------------
-    // --------------------------------------------------------------------------------------
-
-    Route::get('patients', [PatientProfileController::class, 'index'])->middleware('can:admin-access');
+    Route::get('patients', [PatientProfileController::class, 'index'])
+        ->middleware('can:admin-access');
 
     Route::post('patients', [PatientProfileController::class, 'store'])
-        ->middleware('can.any:admin-access,patient-access')
-        ->name('patients.store');
-    ;
+        ->middleware('can.any:admin-access,patient-access');
 
-    Route::get('patients/{patientProfile}', [PatientProfileController::class, 'show']);
+    Route::middleware([
+        'can.any:patient-access,admin-access',
+        'can:profile-exists',
+    ])->group(function () {
+        Route::get('patients/{patient}', [PatientProfileController::class, 'show']);
+        Route::put('patients/{patient}', [PatientProfileController::class, 'update']);
+    });
 
-    Route::patch('patients/{patientProfile}', [PatientProfileController::class, 'update']);
-    // --------------------------------------------------------------------------------------
+    Route::resource(
+        'patients/{patientProfile}/medical-history',
+        MedicalHistoryController::class
+    )
+        ->except(['create', 'edit'])
+        ->middleware('can:profile-exists');
 
-    // --------------------------------------------------------------------------------------
-    // ----------------------------------- MedicalHistory -----------------------------------
-    // --------------------------------------------------------------------------------------
-    Route::get('patients/{patientProfile}/medical_histories', [MedicalHistoryController::class, 'index']);
 
-    Route::get('patients/{patientProfile}/medical_histories/{medicalHistory}', [MedicalHistoryController::class, 'show']);
+    /*
+    |--------------------------------------------------------------------------
+    | Doctors
+    |--------------------------------------------------------------------------
+    */
 
-    Route::post('patients/{patientProfile}/medical_histories', [MedicalHistoryController::class, 'store']);
+    Route::post('doctors/{doctor}', [DoctorProfileController::class, 'store'])
+        ->middleware('can.any:admin-access,doctor-access');
 
-    Route::patch('patients/{patientProfile}/medical_histories/{medicalHistory}', [MedicalHistoryController::class, 'update']);
-    // --------------------------------------------------------------------------------------
+    Route::patch('doctors/{doctor}', [DoctorProfileController::class, 'update'])
+        ->middleware([
+            'can:admin-access,doctor-access',
+            'can:profile-exists',
+        ]);
 
-    // --------------------------------------------------------------------------------------
-    // ----------------------------------- Availabilities -----------------------------------
-    // --------------------------------------------------------------------------------------
+    Route::middleware([
+        'can:admin-access,doctor-access',
+        'can:profile-exists',
+    ])->group(function () {
+        Route::resource('doctors/{doctor}/availability', AvailabilityController::class)
+            ->except(['create', 'edit']);
 
-    Route::post('doctors/{doctorProfile}/availabilities', [AvailabilityController::class, 'store']);
+        Route::resource('doctors/{doctor}/unavailabilities', UnavailabilityController::class)
+            ->except(['create', 'edit']);
+    });
 
-    Route::delete('doctors/{doctorProfile}/availabilities/{availability}', [AvailabilityController::class, 'destroy']);
 
-    Route::get('doctors/{doctorProfile}/availabilities/{availability}', [AvailabilityController::class, 'show']);
+    /*
+    |--------------------------------------------------------------------------
+    | Administration
+    |--------------------------------------------------------------------------
+    */
 
-    Route::patch('doctors/{doctorProfile}/availabilities/{availability}', [AvailabilityController::class, 'update']);
+    Route::middleware('can:admin-access')->group(function () {
+        Route::resource('cities', CityController::class)
+            ->only(['store', 'update', 'destroy']);
 
-    Route::get('doctors/{doctorProfile}/available-slots', [AvailabilityController::class, 'indexAvailableSlots']);
-
-    Route::get('doctors/{doctorProfile}/availabilities', [AvailabilityController::class, 'index']);
-
-    // --------------------------------------------------------------------------------------
-
-    // --------------------------------------------------------------------------------------
-    // ----------------------------------- Unavailabilities ---------------------------------
-    // --------------------------------------------------------------------------------------
-
-    Route::post('doctors/{doctorProfile}/unavailabilities', [UnavailabilityController::class, 'store']);
-
-    // --------------------------------------------------------------------------------------
-
-    Route::middleware('can:profile-exists')->group(function () {
-        // --------------------------------------------------------------------------------------
-        // -------------------------------------- Cities ----------------------------------------
-        // --------------------------------------------------------------------------------------
-        Route::resource('cities', CityController::class)->only(['index', 'show']);
-
-        Route::resource('cities', CityController::class)->only(['store', 'update', 'destroy'])
-            ->middleware('can:admin-access');
-        // --------------------------------------------------------------------------------------
-
-        // --------------------------------------------------------------------------------------
-        // ------------------------------------ Specialties -------------------------------------
-        // --------------------------------------------------------------------------------------
-        Route::resource('specialties', SpecialtyController::class)->only(['index', 'show']);
-
-        Route::resource('specialties', SpecialtyController::class)->only(['store', 'update', 'destroy'])
-            ->middleware('can:admin-access');
-        // --------------------------------------------------------------------------------------
+        Route::resource('specialties', SpecialtyController::class)
+            ->only(['store', 'update', 'destroy']);
     });
 });
