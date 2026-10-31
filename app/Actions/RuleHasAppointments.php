@@ -2,6 +2,7 @@
 
 namespace App\Actions;
 
+use App\Enums\AppointmentStatus;
 use App\Enums\AvailabilityDefType;
 use App\Models\Appointment;
 use App\Models\Availability;
@@ -43,6 +44,7 @@ class RuleHasAppointments implements Action
                         $appointment->end_at->toTimeString(),
                     ]
                 )
+                && $appointment->status !== AppointmentStatus::CANCELLED
         );
     }
 }

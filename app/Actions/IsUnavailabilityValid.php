@@ -2,6 +2,7 @@
 
 namespace App\Actions;
 
+use App\Enums\AppointmentStatus;
 use App\Models\Appointment;
 use App\Models\Unavailability;
 
@@ -19,6 +20,7 @@ class IsUnavailabilityValid implements Action
                 '>=',
                 $unavailability->start_at
             )
+            ->whereNot('status', AppointmentStatus::CANCELLED)
             ->exists());
     }
 }
