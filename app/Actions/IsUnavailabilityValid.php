@@ -4,13 +4,14 @@ namespace App\Actions;
 
 use App\Enums\AppointmentStatus;
 use App\Models\Appointment;
+use App\Models\DoctorProfile;
 use App\Models\Unavailability;
 
 class IsUnavailabilityValid implements Action
 {
-    public static function execute(Unavailability $unavailability): bool
+    public static function execute(Unavailability $unavailability, DoctorProfile $doctorProfile): bool
     {
-        return ! (Appointment::where(
+        return ! ($doctorProfile->appointments()->where(
             'start_at',
             '<=',
             $unavailability->end_at

@@ -14,6 +14,7 @@ use App\Models\Availability;
 use App\Models\DoctorProfile;
 use Carbon\Carbon;
 use Gate;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Response;
 use RRule\RRule;
 
@@ -104,11 +105,21 @@ class AvailabilityController extends Controller
             $availability->date = $data['new_date'] ?? $availability->date;
         }
 
-        if (RulesIntersect::execute($doctorProfile, $availability)) {
-            return Response::json(['message' => 'conflicting rules'], 409);
-        }
+        $availability = DB::transaction(function () use ($availability, $doctorProfile) {
+            $availability->delete();
 
-        $availability->save();
+            if (RulesIntersect::execute($doctorProfile, $availability)) {
+                return Response::json(['message' => 'conflicting rules'], 409);
+            }
+
+            $availability->save();
+
+            return $availability->refresh();
+        });
+
+        if ($availability instanceof Response) {
+            return $availability;
+        }
 
         return $availability->refresh()->toResource();
     }

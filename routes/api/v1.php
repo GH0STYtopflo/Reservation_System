@@ -9,7 +9,22 @@ use App\Http\Controllers\MedicalHistoryController;
 use App\Http\Controllers\PatientProfileController;
 use App\Http\Controllers\SpecialtyController;
 use App\Http\Controllers\UnavailabilityController;
+use App\Models\User;
 use Illuminate\Support\Facades\Route;
+
+/*
+|--------------------------------------------------------------------------
+| Test
+|--------------------------------------------------------------------------
+*/
+
+Route::get('test', function () {
+    //    DB::transaction(function () {
+    //        User::find(1)->delete();
+    //
+    //        dd(User::find(1));
+    //    });
+});
 
 /*
 |--------------------------------------------------------------------------

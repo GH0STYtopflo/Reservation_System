@@ -10,6 +10,7 @@ use App\Models\DoctorProfile;
 use App\Models\Unavailability;
 use App\Policies\UnavailabilityPolicy;
 use Gate;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Response;
 
 class UnavailabilityController extends Controller
@@ -28,7 +29,7 @@ class UnavailabilityController extends Controller
         $data = $request->validated();
         $unav = $doctorProfile->unavailabilities()->make($data);
 
-        if (! IsUnavailabilityValid::execute($unav)) {
+        if (! IsUnavailabilityValid::execute($unav, $doctorProfile)) {
             return Response::json(['message' => 'Conflicting unavailability definition'], 409);
         }
 
@@ -50,10 +51,10 @@ class UnavailabilityController extends Controller
 
         $unavailability->fill($request->validated());
 
-        if (! isUnavailabilityValid::execute($unavailability)) {
+        if (! isUnavailabilityValid::execute($unavailability, $doctorProfile)) {
             return Response::json(['message' => 'Conflicting unavailability definition'], 409);
         }
-
+        
         $unavailability->save();
 
         return $unavailability->toResource();
