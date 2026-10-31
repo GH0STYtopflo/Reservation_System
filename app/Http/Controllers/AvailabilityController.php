@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Actions\MakeSlots;
+use App\Actions\RuleHasAppointments;
 use App\Actions\RulesIntersect;
 use App\Enums\AvailabilityDefType;
 use App\Http\Requests\Availabilities\IndexAvailableSlotsRequest;
@@ -105,9 +106,11 @@ class AvailabilityController extends Controller
 
     public function destroy(DoctorProfile $doctorProfile, Availability $availability)
     {
-        $availability->delete();
+        if (RuleHasAppointments::execute($availability, $doctorProfile)) {
+            return Response::json(['message' => 'You have appointments reserved for this availability'], 409);
+        }
 
-        // TODO: Check if the doctor has an appointment which will prevent from deletion
+        $availability->delete();
 
         return Response::noContent();
     }
