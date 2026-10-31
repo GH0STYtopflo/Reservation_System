@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\IsUnavailabilityValid;
 use App\Http\Requests\Unavailabilities\StoreUnavailabilityRequest;
 use App\Http\Requests\Unavailabilities\UpdateUnavailabilityRequest;
 use App\Models\Appointment;
@@ -27,30 +28,13 @@ class UnavailabilityController extends Controller
         $data = $request->validated();
         $unav = $doctorProfile->unavailabilities()->make($data);
 
-        if (! self::isValid($unav)) {
+        if (! IsUnavailabilityValid::execute($unav)) {
             return Response::json(['message' => 'Conflicting unavailability definition'], 409);
         }
 
         $unav->save();
 
         return $unav->toResource();
-    }
-
-    private static function isValid(Unavailability $unavailability): bool
-    {
-        // TODO: Get this into an action class
-
-        return ! (Appointment::where(
-            'start_at',
-            '<=',
-            $unavailability->end_at
-        )
-            ->orWhere(
-                'end_at',
-                '>=',
-                $unavailability->start_at
-            )
-            ->exists());
     }
 
     public function show(DoctorProfile $doctorProfile, Unavailability $unavailability)
@@ -66,7 +50,7 @@ class UnavailabilityController extends Controller
 
         $unavailability->fill($request->validated());
 
-        if (! self::isValid($unavailability)) {
+        if (! isUnavailabilityValid::execute($unavailability)) {
             return Response::json(['message' => 'Conflicting unavailability definition'], 409);
         }
 
