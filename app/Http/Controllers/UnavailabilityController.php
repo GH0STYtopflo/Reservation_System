@@ -54,7 +54,7 @@ class UnavailabilityController extends Controller
         if (! isUnavailabilityValid::execute($unavailability, $doctorProfile)) {
             return Response::json(['message' => 'Conflicting unavailability definition'], 409);
         }
-        
+
         $unavailability->save();
 
         return $unavailability->toResource();

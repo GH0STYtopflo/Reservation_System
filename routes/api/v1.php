@@ -128,10 +128,14 @@ Route::middleware('auth:sanctum')->group(function () {
         'can:profile-exists',
     ])->group(function () {
         Route::resource('doctors/{doctor}/availability', AvailabilityController::class)
-            ->except(['create', 'edit']);
+            ->except(['create', 'edit', 'update']);
+
+        Route::put('doctors/{doctor}/availability', [AvailabilityController::class, 'update']);
 
         Route::resource('doctors/{doctor}/unavailabilities', UnavailabilityController::class)
-            ->except(['create', 'edit']);
+            ->except(['create', 'edit', 'update']);
+
+        Route::put('doctors/{doctor}/unavailabilities', [UnavailabilityController::class, 'update']);
     });
 
 
@@ -144,13 +148,26 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::middleware(['can:profile-exists', 'can:doctor-profile-verified'])->group(function () {
         Route::get('appointments', [AppointmentController::class, 'index']);
 
+        Route::post('appointments', [AppointmentController::class, 'store'])
+            ->middleware('can:patient-access');
+
         Route::get('appointments/{appointment}', [AppointmentController::class, 'show']);
 
-        Route::patch('appointments/{appointment}', [AppointmentController::class, 'update']);
+        Route::patch('appointments/{appointment}', [AppointmentController::class, 'update'])
+            ->middleware('can:patient-access');
 
-        Route::patch('appointments/{appointment}:cancel', [AppointmentController::class, 'cancelAppointment']);
+        Route::patch('appointments/{appointment}:cancel', [AppointmentController::class, 'cancelAppointment'])
+            ->middleware('can.any:patient-access,doctor-access');
 
-        Route::delete('appointments/{appointment}', [AppointmentController::class, 'destroy']);
+        Route::patch('appointments/{appointment}:approve', [AppointmentController::class, 'approveAppointment'])
+            ->middleware('can:doctor-access');
+
+        // This reschedules the appointment
+        Route::put('appointments/{appointment}', [AppointmentController::class, 'rescheduleAppointment'])
+            ->middleware('can.any:patient-access,doctor-access');
+
+        Route::delete('appointments/{appointment}', [AppointmentController::class, 'destroy'])
+            ->middleware('can:admin-access');
     });
 
     /*

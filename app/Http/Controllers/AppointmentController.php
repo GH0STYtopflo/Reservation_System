@@ -6,11 +6,14 @@ use App\Actions\AppointmentTimeValid;
 use App\Enums\AppointmentStatus;
 use App\Enums\Role;
 use App\Http\Requests\Appointment\CancelAppointmentRequest;
+use App\Http\Requests\Appointment\RescheduleAppointmentRequest;
 use App\Http\Requests\Appointment\StoreAppointmentRequest;
 use App\Http\Requests\Appointment\UpdateAppointmentRequest;
 use App\Models\Appointment;
 use App\Models\DoctorProfile;
 use Carbon\Carbon;
+use Gate;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Response;
 
 class AppointmentController extends Controller
@@ -58,11 +61,15 @@ class AppointmentController extends Controller
 
     public function show(Appointment $appointment)
     {
+        Gate::authorize('view', $appointment);
+
         return $appointment->toResource();
     }
 
     public function update(UpdateAppointmentRequest $request, Appointment $appointment)
     {
+        Gate::authorize('update', $appointment);
+
         $appointment->patient_note = $request->patient_note;
 
         $appointment->save();
@@ -70,8 +77,42 @@ class AppointmentController extends Controller
         return $appointment->toResource();
     }
 
+    public function rescheduleAppointment(RescheduleAppointmentRequest $request, Appointment $appointment)
+    {
+        Gate::authorize('reschedule', $appointment);
+
+        $datetime = Carbon::parse($request->validated()['datetime']);
+
+        $appointment = DB::transaction(function () use ($request, $appointment, $datetime) {
+            $appointment->delete();
+
+            if (!AppointmentTimeValid::execute($datetime, $appointment->doctor)) {
+                return Response::json([
+                    "message" => "The appointment time is not valid.",
+                ],
+                    409);
+            }
+
+            $appointment->start_at = $datetime;
+            $appointment->end_at = $datetime->addMinutes(30);
+
+            $appointment->save();
+
+            return $appointment->refresh();
+        });
+
+
+        if ($appointment instanceof Response) {
+            return $appointment;
+        }
+
+        return $appointment->toResource();
+    }
+
     public function cancelAppointment(CancelAppointmentRequest $request, Appointment $appointment)
     {
+        Gate::authorize('reschedule-cancel', $appointment);
+
         if ($appointment->start_at->lte(now()->addMinutes(15))) {
             return Response::json([
                 "message" => "The appointment cannot be cancelled.",
@@ -81,6 +122,17 @@ class AppointmentController extends Controller
 
         $appointment->status = AppointmentStatus::CANCELLED;
         $appointment->cancellation_reason = $request->cancellation_reason;
+
+        $appointment->save();
+
+        return $appointment->toResource();
+    }
+
+    public function approveAppointment(Appointment $appointment)
+    {
+        Gate::authorize('approve', $appointment);
+
+        $appointment->status = AppointmentStatus::APPROVED;
 
         $appointment->save();
 
