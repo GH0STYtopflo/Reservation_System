@@ -7,17 +7,23 @@ use App\Http\Requests\Unavailabilities\UpdateUnavailabilityRequest;
 use App\Models\Appointment;
 use App\Models\DoctorProfile;
 use App\Models\Unavailability;
+use App\Policies\UnavailabilityPolicy;
+use Gate;
 use Illuminate\Support\Facades\Response;
 
 class UnavailabilityController extends Controller
 {
     public function index(DoctorProfile $doctorProfile)
     {
+        Gate::authorize('vc', [Unavailability::class, $doctorProfile]);
+
         return $doctorProfile->unavailabilities;
     }
 
     public function store(StoreUnavailabilityRequest $request, DoctorProfile $doctorProfile)
     {
+        Gate::authorize('vc', [Unavailability::class, $doctorProfile]);
+
         $data = $request->validated();
         $unav = $doctorProfile->unavailabilities()->make($data);
 
@@ -32,6 +38,8 @@ class UnavailabilityController extends Controller
 
     private static function isValid(Unavailability $unavailability): bool
     {
+        // TODO: Get this into an action class
+
         return ! (Appointment::where(
             'start_at',
             '<=',
@@ -47,11 +55,15 @@ class UnavailabilityController extends Controller
 
     public function show(DoctorProfile $doctorProfile, Unavailability $unavailability)
     {
+        Gate::authorize('vud', $unavailability);
+
         return $unavailability->toResource();
     }
 
     public function update(UpdateUnavailabilityRequest $request, DoctorProfile $doctorProfile, Unavailability $unavailability)
     {
+        Gate::authorize('vud', $unavailability);
+
         $unavailability->fill($request->validated());
 
         if (! self::isValid($unavailability)) {
@@ -65,6 +77,8 @@ class UnavailabilityController extends Controller
 
     public function destroy(DoctorProfile $doctorProfile, Unavailability $unavailability)
     {
+        Gate::authorize('vud', $unavailability);
+
         $unavailability->delete();
     }
 }

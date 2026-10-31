@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\Role;
 use App\Http\Requests\PatientProfile\StorePatientProfileRequest;
 use App\Http\Requests\PatientProfile\UpdatePatientProfileRequest;
 use App\Models\PatientProfile;
@@ -21,6 +22,12 @@ class PatientProfileController extends Controller
         $data = $request->validated();
 
         $user = empty($data['user_id']) ? Auth::user() : User::firstWhere('id', $data['user_id']);
+
+        if ($user->role !== Role::PATIENT) {
+            return response()->json([
+                'message' => 'Only patients can have patient profile'
+            ], 409);
+        }
 
         if ($user->patientProfile()->exists()) {
             return response()->json([

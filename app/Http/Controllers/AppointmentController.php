@@ -70,7 +70,7 @@ class AppointmentController extends Controller
         return $appointment->toResource();
     }
 
-    public static function cancelAppointment(CancelAppointmentRequest $request, Appointment $appointment)
+    public function cancelAppointment(CancelAppointmentRequest $request, Appointment $appointment)
     {
         if ($appointment->start_at->lte(now()->addMinutes(15))) {
             return Response::json([

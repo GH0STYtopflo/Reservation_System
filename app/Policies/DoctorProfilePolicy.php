@@ -9,9 +9,11 @@ use Illuminate\Auth\Access\Response;
 
 class DoctorProfilePolicy
 {
-    public function mutate(User $user, DoctorProfile $doctorProfile): Response
+    public function update(User $user, DoctorProfile $doctorProfile): Response
     {
-        return ($user->role == Role::DOCTOR && $user->is($doctorProfile->user)) || $user->role == Role::ADMIN ?
-            Response::allow() : Response::deny('You are not mutate this resource.');
+        return
+            ($user->role === Role::ADMIN) ||
+            ($user->role === Role::DOCTOR && $doctorProfile->user->is($user)) ?
+                Response::allow() : Response::deny();
     }
 }

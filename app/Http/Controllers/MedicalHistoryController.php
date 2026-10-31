@@ -13,30 +13,30 @@ class MedicalHistoryController extends Controller
 {
     public function index(PatientProfile $patientProfile)
     {
-        Gate::authorize('crud', [MedicalHistory::class, $patientProfile]);
+        Gate::authorize('vc', [MedicalHistory::class, $patientProfile]);
 
         return $patientProfile->medicalHistories->toResourceCollection();
     }
 
     public function store(StoreHistoryRequest $request, PatientProfile $patientProfile)
     {
-        Gate::authorize('crud', [MedicalHistory::class, $patientProfile]);
+        Gate::authorize('vc', [MedicalHistory::class, $patientProfile]);
 
         $patientProfile->medicalHistories()->create($request->validated());
 
         return $patientProfile->refresh()->toResource();
     }
 
-    public function show(PatientProfile $patientProfile, MedicalHistory $medicalHistory)
+    public function show($patientProfile, MedicalHistory $medicalHistory)
     {
-        Gate::authorize('crud', [MedicalHistory::class, $patientProfile]);
+        Gate::authorize('vud', $medicalHistory);
 
         return $medicalHistory->toResource();
     }
 
-    public function update(UpdateHistoryRequest $request, PatientProfile $patientProfile, MedicalHistory $medicalHistory)
+    public function update(UpdateHistoryRequest $request, $patientProfile, MedicalHistory $medicalHistory)
     {
-        Gate::authorize('crud', [MedicalHistory::class, $patientProfile]);
+        Gate::authorize('vud', $medicalHistory);
 
         $data = $request->validated();
 
@@ -49,9 +49,9 @@ class MedicalHistoryController extends Controller
         return $medicalHistory->refresh()->toResource();
     }
 
-    public function destroy(PatientProfile $patientProfile, MedicalHistory $medicalHistory)
+    public function destroy($patientProfile, MedicalHistory $medicalHistory)
     {
-        Gate::authorize('crud', [MedicalHistory::class, $patientProfile]);
+        Gate::authorize('vud', $medicalHistory);
 
         $medicalHistory->delete();
 

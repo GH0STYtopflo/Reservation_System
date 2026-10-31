@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AvailabilityController;
 use App\Http\Controllers\CityController;
@@ -34,7 +35,7 @@ Route::post('auth:logout', [AuthController::class, 'logout'])
 Route::resource('doctors', DoctorProfileController::class)
     ->only(['index', 'show']);
 
-Route::get('doctors/{doctor}/availability', [
+Route::get('doctors/{doctor}/available-slots', [
     AvailabilityController::class,
     'indexAvailableSlots',
 ]);
@@ -65,13 +66,18 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('patients', [PatientProfileController::class, 'store'])
         ->middleware('can.any:admin-access,patient-access');
 
-    Route::middleware([
-        'can.any:patient-access,admin-access',
-        'can:profile-exists',
-    ])->group(function () {
-        Route::get('patients/{patient}', [PatientProfileController::class, 'show']);
-        Route::put('patients/{patient}', [PatientProfileController::class, 'update']);
-    });
+
+    Route::get('patients/{patient}', [PatientProfileController::class, 'show'])
+        ->middleware([
+            'can.any:patient-access,admin-access,doctor-access',
+            'can:profile-exists',
+        ]);
+
+    Route::put('patients/{patient}', [PatientProfileController::class, 'update'])
+        ->middleware([
+            'can.any:patient-access,admin-access',
+            'can:profile-exists',
+            ]);
 
     Route::resource(
         'patients/{patientProfile}/medical-history',
@@ -96,6 +102,12 @@ Route::middleware('auth:sanctum')->group(function () {
             'can:profile-exists',
         ]);
 
+    Route::put('doctors/{doctor}/specialties', [DoctorProfileController::class, 'updateDoctorSpecialties'])
+        ->middleware(['can.any:admin-access,doctor-access', 'can:profile-exists']);
+
+    Route::patch('doctors/{doctor}:verify', [DoctorProfileController::class, 'verifyDoctor'])
+        ->middleware('can:admin-access');
+
     Route::middleware([
         'can:admin-access,doctor-access',
         'can:profile-exists',
@@ -107,6 +119,24 @@ Route::middleware('auth:sanctum')->group(function () {
             ->except(['create', 'edit']);
     });
 
+
+    /*
+    |--------------------------------------------------------------------------
+    | Appointments
+    |--------------------------------------------------------------------------
+    */
+
+    Route::middleware(['can:profile-exists', 'can:doctor-profile-verified'])->group(function () {
+        Route::get('appointments', [AppointmentController::class, 'index']);
+
+        Route::get('appointments/{appointment}', [AppointmentController::class, 'show']);
+
+        Route::patch('appointments/{appointment}', [AppointmentController::class, 'update']);
+
+        Route::patch('appointments/{appointment}:cancel', [AppointmentController::class, 'cancelAppointment']);
+
+        Route::delete('appointments/{appointment}', [AppointmentController::class, 'destroy']);
+    });
 
     /*
     |--------------------------------------------------------------------------

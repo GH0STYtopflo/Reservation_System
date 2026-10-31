@@ -13,6 +13,7 @@ use App\Http\Resources\AvailabilityResource;
 use App\Models\Availability;
 use App\Models\DoctorProfile;
 use Carbon\Carbon;
+use Gate;
 use Illuminate\Support\Facades\Response;
 use RRule\RRule;
 
@@ -20,11 +21,15 @@ class AvailabilityController extends Controller
 {
     public function index(DoctorProfile $doctorProfile)
     {
+        Gate::authorize('vc', [Availability::class, $doctorProfile]);
+
         return $doctorProfile->availabilities->toResourceCollection();
     }
 
     public function store(StoreAvailabilityRequest $request, DoctorProfile $doctorProfile)
     {
+        Gate::authorize('vc', [Availability::class, $doctorProfile]);
+
         $data = $request->validated();
 
         if ($data['type'] == AvailabilityDefType::RECURRING->value) {
@@ -69,13 +74,17 @@ class AvailabilityController extends Controller
         }
     }
 
-    public function show(DoctorProfile $doctorProfile, Availability $availability)
+    public function show($doctorProfile, Availability $availability)
     {
+        Gate::authorize('vud', $availability);
+
         return $availability->toResource();
     }
 
     public function update(UpdateAvailabilityRequest $request, DoctorProfile $doctorProfile, Availability $availability)
     {
+        Gate::authorize('vud', $availability);
+
         $data = $request->validated();
 
         $availability->fill([
@@ -106,6 +115,8 @@ class AvailabilityController extends Controller
 
     public function destroy(DoctorProfile $doctorProfile, Availability $availability)
     {
+        Gate::authorize('vud', $availability);
+
         if (RuleHasAppointments::execute($availability, $doctorProfile)) {
             return Response::json(['message' => 'You have appointments reserved for this availability'], 409);
         }
