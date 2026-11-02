@@ -23,3 +23,5 @@ README.md
 sql
 npm-debug.log
 .env.testing
+rector.php
+database/database.sqlite

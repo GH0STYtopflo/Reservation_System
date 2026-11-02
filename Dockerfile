@@ -18,14 +18,13 @@ RUN apk add --no-cache --virtual .build-deps \
 
 COPY . .
 
-RUN composer install --no-dev --optimize-autoloader --no-interaction \
-    && php artisan optimize
+RUN composer install --no-dev --optimize-autoloader --no-interaction
 
 EXPOSE 8000
 
 CMD ["sh", "-c", "\
-    php artisan migrate --force --no-interaction && \
-    php artisan db:seed --force --no-interaction && \
-    php artisan serve --host=0.0.0.0 --port=8000 & \
-    php artisan queue:work --sleep=3 --tries=3 --timeout=90 \
+    php artisan migrate && \
+    php artisan db:seed --force && \
+    php artisan queue:work --sleep=3 --tries=3 --timeout=90 & \
+    php artisan serve --host=0.0.0.0 --port=8000 \
 "]
