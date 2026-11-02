@@ -16,7 +16,7 @@ A RESTful API built with Laravel for managing medical appointments between docto
 This API provides a complete backend for managing medical appointments. It connects doctors and patients through a structured scheduling system, with role-based access control ensuring each user type can only perform actions relevant to their responsibilities.
 
 ## ERD
-![Entity Relationship Diagram](https://github.com/GH0STYtopflo/Reservation_System/blob/main/composer.json/Medical%20Reservation%20System.png)
+![Entity Relationship Diagram](https://github.com/GH0STYtopflo/Reservation_System/blob/main/composer.json/ERD.png)
 
 ## User Roles
 
