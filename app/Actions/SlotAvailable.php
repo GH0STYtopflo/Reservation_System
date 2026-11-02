@@ -10,11 +10,17 @@ class SlotAvailable implements Action
 {
     public static function execute(CarbonImmutable $timestamp, DoctorProfile $doctorProfile): bool
     {
-        return !$doctorProfile->unavailabilities()
+        return !(
+            $doctorProfile->unavailabilities()
             ->whereValueBetween($timestamp->toAtomString(), ['start_at', 'end_at'])
-            ->exists() && !$doctorProfile->appointments()
+            ->exists()
+            ||
+            $doctorProfile->appointments()
             ->whereValueBetween($timestamp, ['start_at', 'end_at'])
             ->whereNot('status', AppointmentStatus::CANCELLED)
-            ->exists();
+            ->exists()
+            ||
+            $timestamp->lt(now())
+        );
     }
 }
