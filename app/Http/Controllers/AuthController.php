@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\Role;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Resources\UserResource;
@@ -18,12 +19,21 @@ class AuthController extends Controller
         if (auth()->once($data)) {
             $user = auth()->user();
 
+            if ($user->role === Role::PATIENT) {
+                $profile = $user->patientProfile;
+            } elseif ($user->role === Role::DOCTOR) {
+                $profile = $user->doctorProfile;
+            } else {
+                $profile = null;
+            }
+
             if ($user->tokens()->exists()) {
                 $user->tokens()->delete();
             }
 
             return response()->json([
                 'token' => base64_encode($user->createToken('auth-token')->plainTextToken),
+                'profile' => $profile,
             ]);
         }
 

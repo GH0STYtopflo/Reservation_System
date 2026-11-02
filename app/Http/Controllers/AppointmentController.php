@@ -43,7 +43,14 @@ class AppointmentController extends Controller
 
         $datetime = CarbonImmutable::parse($data['datetime']);
 
-        $doctor = DoctorProfile::find($data['doctor_id']);
+        $doctor = DoctorProfile::findOrFail($data['doctor_id']);
+
+        if ($doctor->verified_at === null) {
+            return Response::json([
+                'message' => 'This doctor is not verified.',
+            ],
+                409);
+        }
 
         $patient = Auth::user()->patientProfile;
 
