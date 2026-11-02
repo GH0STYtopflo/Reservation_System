@@ -19,11 +19,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('test', function () {
-    //    DB::transaction(function () {
-    //        User::find(1)->delete();
-    //
-    //        dd(User::find(1));
-    //    });
+    dd(DB::select('SHOW TIME ZONE'));
 });
 
 /*
@@ -47,10 +43,10 @@ Route::post('auth:logout', [AuthController::class, 'logout'])
 |--------------------------------------------------------------------------
 */
 
-Route::resource('doctors', DoctorProfileController::class)
-    ->only(['index', 'show']);
+Route::get('doctors', [DoctorProfileController::class, 'index']);
+Route::get('doctors/{doctorProfile}', [DoctorProfileController::class, 'show']);
 
-Route::get('doctors/{doctor}/available-slots', [
+Route::get('doctors/{doctorProfile}/available-slots', [
     AvailabilityController::class,
     'indexAvailableSlots',
 ]);
@@ -82,13 +78,13 @@ Route::middleware('auth:sanctum')->group(function () {
         ->middleware('can.any:admin-access,patient-access');
 
 
-    Route::get('patients/{patient}', [PatientProfileController::class, 'show'])
+    Route::get('patients/{patientProfile}', [PatientProfileController::class, 'show'])
         ->middleware([
             'can.any:patient-access,admin-access,doctor-access',
             'can:profile-exists',
         ]);
 
-    Route::put('patients/{patient}', [PatientProfileController::class, 'update'])
+    Route::patch('patients/{patientProfile}', [PatientProfileController::class, 'update'])
         ->middleware([
             'can.any:patient-access,admin-access',
             'can:profile-exists',
@@ -104,38 +100,55 @@ Route::middleware('auth:sanctum')->group(function () {
 
     /*
     |--------------------------------------------------------------------------
+    | Medical History
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get('patients/{patientProfile}/medical_history', [MedicalHistoryController::class, 'index']);
+
+    Route::get('patients/{patientProfile}/medical_history/{medicalHistory}', [MedicalHistoryController::class, 'show']);
+
+    Route::post('patients/{patientProfile}/medical_history', [MedicalHistoryController::class, 'store']);
+
+    Route::patch('patients/{patientProfile}/medical_history/{medicalHistory}', [MedicalHistoryController::class, 'update']);
+
+
+    /*
+    |--------------------------------------------------------------------------
     | Doctors
     |--------------------------------------------------------------------------
     */
 
-    Route::post('doctors/{doctor}', [DoctorProfileController::class, 'store'])
+    Route::post('doctors', [DoctorProfileController::class, 'store'])
         ->middleware('can.any:admin-access,doctor-access');
 
-    Route::patch('doctors/{doctor}', [DoctorProfileController::class, 'update'])
+    Route::patch('doctors/{doctorProfile}', [DoctorProfileController::class, 'update'])
         ->middleware([
-            'can:admin-access,doctor-access',
+            'can.any:admin-access,doctor-access',
             'can:profile-exists',
-        ]);
+        ])
+        ->whereNumber('doctorProfile'); // This is so the verification route and this route
+                                                  //  don't interfere with each other
 
-    Route::put('doctors/{doctor}/specialties', [DoctorProfileController::class, 'updateDoctorSpecialties'])
+    Route::put('doctors/{doctorProfile}/specialties', [DoctorProfileController::class, 'updateDoctorSpecialties'])
         ->middleware(['can.any:admin-access,doctor-access', 'can:profile-exists']);
 
-    Route::patch('doctors/{doctor}:verify', [DoctorProfileController::class, 'verifyDoctor'])
+    Route::patch('doctors/{doctorProfile}:verify', [DoctorProfileController::class, 'verifyDoctor'])
         ->middleware('can:admin-access');
 
     Route::middleware([
-        'can:admin-access,doctor-access',
+        'can.any:admin-access,doctor-access',
         'can:profile-exists',
     ])->group(function () {
-        Route::resource('doctors/{doctor}/availability', AvailabilityController::class)
+        Route::resource('doctors/{doctorProfile}/availabilities', AvailabilityController::class)
             ->except(['create', 'edit', 'update']);
 
-        Route::put('doctors/{doctor}/availability', [AvailabilityController::class, 'update']);
+        Route::put('doctors/{doctorProfile}/availabilies', [AvailabilityController::class, 'update']);
 
-        Route::resource('doctors/{doctor}/unavailabilities', UnavailabilityController::class)
+        Route::resource('doctors/{doctorProfile}/unavailabilities', UnavailabilityController::class)
             ->except(['create', 'edit', 'update']);
 
-        Route::put('doctors/{doctor}/unavailabilities', [UnavailabilityController::class, 'update']);
+        Route::put('doctors/{doctorProfile}/unavailabilities/{unavailability}', [UnavailabilityController::class, 'update']);
     });
 
 
@@ -154,13 +167,16 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('appointments/{appointment}', [AppointmentController::class, 'show']);
 
         Route::patch('appointments/{appointment}', [AppointmentController::class, 'update'])
-            ->middleware('can:patient-access');
+            ->middleware('can:patient-access')
+            ->whereNumber('appointment');
 
         Route::patch('appointments/{appointment}:cancel', [AppointmentController::class, 'cancelAppointment'])
-            ->middleware('can.any:patient-access,doctor-access');
+            ->middleware('can.any:patient-access,doctor-access')
+            ->whereNumber('appointment');
 
         Route::patch('appointments/{appointment}:approve', [AppointmentController::class, 'approveAppointment'])
-            ->middleware('can:doctor-access');
+            ->middleware('can:doctor-access')
+            ->whereNumber('appointment');
 
         // This reschedules the appointment
         Route::put('appointments/{appointment}', [AppointmentController::class, 'rescheduleAppointment'])

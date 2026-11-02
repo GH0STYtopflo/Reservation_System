@@ -37,7 +37,6 @@ class StoreAvailabilityRequest extends FormRequest
                 'required',
                 'date_format:Y-m-d',
                 'after_or_equal:today',
-                'distinct',
             ],
             'shift_start_at' => [
                 'required',

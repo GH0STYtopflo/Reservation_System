@@ -42,7 +42,7 @@ class UnavailabilityController extends Controller
     {
         Gate::authorize('vud', $unavailability);
 
-        return $unavailability->toResource();
+        return $unavailability->unsetRelation('doctor')->toResource();
     }
 
     public function update(UpdateUnavailabilityRequest $request, DoctorProfile $doctorProfile, Unavailability $unavailability)
@@ -57,7 +57,7 @@ class UnavailabilityController extends Controller
 
         $unavailability->save();
 
-        return $unavailability->toResource();
+        return $unavailability->unsetRelation('doctor')->toResource();
     }
 
     public function destroy(DoctorProfile $doctorProfile, Unavailability $unavailability)
@@ -65,5 +65,7 @@ class UnavailabilityController extends Controller
         Gate::authorize('vud', $unavailability);
 
         $unavailability->delete();
+
+        return \response()->noContent();
     }
 }

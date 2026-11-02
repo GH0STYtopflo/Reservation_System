@@ -13,6 +13,7 @@ use App\Http\Resources\AvailabilityResource;
 use App\Models\Availability;
 use App\Models\DoctorProfile;
 use Carbon\Carbon;
+use Carbon\CarbonImmutable;
 use Gate;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Response;
@@ -34,7 +35,7 @@ class AvailabilityController extends Controller
         $data = $request->validated();
 
         if ($data['type'] == AvailabilityDefType::RECURRING->value) {
-            $rstr = 'FREQ=WEEKLY;'.'BYDAY='.implode(',', $data['days_of_week']);
+            $rstr = 'FREQ=WEEKLY;'.'BYDAY=' . implode(',', $data['days_of_week']);
 
             $rule = new RRule($rstr, '00:00:00'); // cool we have a rrule instance.
 
@@ -51,9 +52,11 @@ class AvailabilityController extends Controller
 
             $av->save();
 
-            return $av->refresh()->toResource();
+            return \response($av->refresh()->toResource(), 201);
         } else {
             $array = [];
+
+            // TODO: improvement possible with transaction
 
             foreach ($data['dates'] as $date) {
                 $av = $doctorProfile->availabilities()->make([
@@ -71,7 +74,7 @@ class AvailabilityController extends Controller
                 $array[] = $av->refresh();
             }
 
-            return AvailabilityResource::collection($array);
+            return \response(AvailabilityResource::collection($array), 201);
         }
     }
 
@@ -139,12 +142,13 @@ class AvailabilityController extends Controller
 
     public function indexAvailableSlots(IndexAvailableSlotsRequest $request, DoctorProfile $doctorProfile)
     {
-        $date = empty($request->validated()['date']) ? now()->setTime(0, 0) : Carbon::parse($request->validated()['date']);
+        $date = empty($request->validated()['date']) ? now()->setTime(0, 0) : CarbonImmutable::parse($request->validated()['date']);
 
         $availabilities = $doctorProfile->availabilities()
             ->where('type', AvailabilityDefType::ONCE)
             ->where('date', $date->toAtomString())
             ->get();
+
 
         $availabilities = $availabilities->concat(
             $doctorProfile->availabilities

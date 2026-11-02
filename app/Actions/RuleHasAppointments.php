@@ -7,6 +7,7 @@ use App\Enums\AvailabilityDefType;
 use App\Models\Appointment;
 use App\Models\Availability;
 use App\Models\DoctorProfile;
+use Carbon\Carbon;
 
 class RuleHasAppointments implements Action
 {
@@ -15,14 +16,17 @@ class RuleHasAppointments implements Action
         if (
             $availability->type === AvailabilityDefType::ONCE
         ) {
-            $start = $availability->date->setTimeFromTimeString($availability->shift_start_at->toTimeString());
-            $end = $availability->date->setTimeFromTimeString($availability->shift_end_at->toTimeString());
+            $date = Carbon::parse($availability->date);
+
+            $start = $date->setTimeFromTimeString(Carbon::parse($availability->shift_start_at)->toTimeString());
+            $end = $date->setTimeFromTimeString(Carbon::parse($availability->shift_end_at)->toTimeString());
 
 
             if (
                 $doctorProfile->appointments()
                     ->whereNot('end_at', '<', $start)
                     ->whereNot('start_at', '>', $end)
+                ->exists()
             ) {
                 return true;
             }
@@ -32,16 +36,16 @@ class RuleHasAppointments implements Action
         return $doctorProfile->appointments->contains(
             fn (Appointment $appointment) =>
                 $availability->rrule->occursAt(
-                    $appointment->start_at->toDateString()
+                    Carbon::parse($appointment->start_at)->toDateString()
                 )
                 && RulesIntersect::hoursIntersect(
                     [
-                        $availability->shift_start_at->toTimeString(),
-                        $availability->shift_end_at->toTimeString(),
+                        Carbon::parse($availability->shift_start_at)->toTimeString(),
+                        Carbon::parse($availability->shift_end_at)->toTimeString(),
                     ],
                     [
-                        $appointment->start_at->toTimeString(),
-                        $appointment->end_at->toTimeString(),
+                        Carbon::parse($appointment->start_at)->toTimeString(),
+                        Carbon::parse($appointment->end_at)->toTimeString(),
                     ]
                 )
                 && $appointment->status !== AppointmentStatus::CANCELLED

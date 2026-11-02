@@ -16,7 +16,7 @@ class IsUnavailabilityValid implements Action
             '<=',
             $unavailability->end_at
         )
-            ->orWhere(
+            ->where(
                 'end_at',
                 '>=',
                 $unavailability->start_at

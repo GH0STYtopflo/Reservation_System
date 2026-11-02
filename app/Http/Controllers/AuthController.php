@@ -7,6 +7,7 @@ use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Auth;
+use Illuminate\Support\Facades\Response;
 
 class AuthController extends Controller
 {
@@ -26,7 +27,7 @@ class AuthController extends Controller
             ]);
         }
 
-        abort(401, 'Invalid credentials');
+        return response()->json(['message' => 'Invalid credentials'], 401);
     }
 
     public function register(RegisterRequest $request)
@@ -41,5 +42,7 @@ class AuthController extends Controller
     public function logout()
     {
         Auth::user()->tokens()->delete();
+
+        return Response::noContent();
     }
 }

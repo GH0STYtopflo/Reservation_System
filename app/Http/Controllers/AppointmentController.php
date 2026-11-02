@@ -12,7 +12,9 @@ use App\Http\Requests\Appointment\UpdateAppointmentRequest;
 use App\Models\Appointment;
 use App\Models\DoctorProfile;
 use Carbon\Carbon;
+use Carbon\CarbonImmutable;
 use Gate;
+use http\Exception\RuntimeException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Response;
 
@@ -35,7 +37,7 @@ class AppointmentController extends Controller
     {
         $data = $request->validated();
 
-        $datetime = Carbon::parse($data['datetime']);
+        $datetime = CarbonImmutable::parse($data['datetime']);
 
         $doctor = DoctorProfile::find($data['doctor_id']);
 
@@ -63,47 +65,46 @@ class AppointmentController extends Controller
     {
         Gate::authorize('view', $appointment);
 
-        return $appointment->toResource();
+        return $appointment->unsetRelation('doctor')->toResource();
     }
 
     public function update(UpdateAppointmentRequest $request, Appointment $appointment)
     {
         Gate::authorize('update', $appointment);
 
-        $appointment->patient_note = $request->patient_note;
+        $appointment->patient_note = $request->validated()['patient_notes'] ?? $appointment->patient_note;
 
         $appointment->save();
 
-        return $appointment->toResource();
+        return $appointment->unsetRelation('patient')->toResource();
     }
 
     public function rescheduleAppointment(RescheduleAppointmentRequest $request, Appointment $appointment)
     {
-        Gate::authorize('reschedule', $appointment);
+        Gate::authorize('reschedule-cancel', $appointment);
 
-        $datetime = Carbon::parse($request->validated()['datetime']);
+        $datetime = CarbonImmutable::parse($request->validated()['datetime']);
 
-        $appointment = DB::transaction(function () use ($request, $appointment, $datetime) {
-            $appointment->delete();
+        try {
+            $appointment = DB::transaction(function () use ($request, $appointment, $datetime) {
+                $appointment->delete();
 
-            if (!AppointmentTimeValid::execute($datetime, $appointment->doctor)) {
-                return Response::json([
-                    "message" => "The appointment time is not valid.",
-                ],
-                    409);
-            }
+                if (!AppointmentTimeValid::execute($datetime, $appointment->doctor)) {
+                    throw new RuntimeException();
+                }
 
-            $appointment->start_at = $datetime;
-            $appointment->end_at = $datetime->addMinutes(30);
+                $appointment->start_at = $datetime;
+                $appointment->end_at = $datetime->addMinutes(30);
 
-            $appointment->save();
+                $appointment->save();
 
-            return $appointment->refresh();
-        });
-
-
-        if ($appointment instanceof Response) {
-            return $appointment;
+                return $appointment->refresh();
+            });
+        } catch (\Throwable) {
+            return Response::json([
+                "message" => "The appointment time is not valid.",
+            ],
+                409);
         }
 
         return $appointment->toResource();
@@ -113,7 +114,7 @@ class AppointmentController extends Controller
     {
         Gate::authorize('reschedule-cancel', $appointment);
 
-        if ($appointment->start_at->lte(now()->addMinutes(15))) {
+        if (CarbonImmutable::parse($appointment->start_at)->lte(now()->addMinutes(15))) {
             return Response::json([
                 "message" => "The appointment cannot be cancelled.",
             ],
@@ -122,10 +123,11 @@ class AppointmentController extends Controller
 
         $appointment->status = AppointmentStatus::CANCELLED;
         $appointment->cancellation_reason = $request->cancellation_reason;
+        $appointment->cancelled_at = CarbonImmutable::now();
 
         $appointment->save();
 
-        return $appointment->toResource();
+        return $appointment->unsetRelation('patient')->toResource();
     }
 
     public function approveAppointment(Appointment $appointment)
@@ -142,5 +144,8 @@ class AppointmentController extends Controller
     public function destroy(Appointment $appointment)
     {
         $appointment->delete();
+
+
+        return \response()->noContent();
     }
 }

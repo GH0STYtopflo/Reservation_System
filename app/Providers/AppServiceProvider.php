@@ -27,21 +27,25 @@ class AppServiceProvider extends ServiceProvider
         // We can be responsible about the data we feed into our model instances
         Model::unguard();
 
+
+
         // --------------------------------------------------------------------------------------
         // ---------------------------- Tier 1 authorization ------------------------------------
         // --------------------------------------------------------------------------------------
         Gate::define('admin-access', function (User $user) {
-            return $user->role === Role::ADMIN ? Response::allow() : Response::denyAsNotFound();
+            return $user->role === Role::ADMIN ? Response::allow() : Response::deny();
         });
 
         Gate::define('doctor-access', function (User $user) {
-            return $user->role === Role::DOCTOR ? Response::allow() : Response::denyAsNotFound();
+            return $user->role === Role::DOCTOR ? Response::allow() : Response::deny();
         });
 
         Gate::define('patient-access', function (User $user) {
-            return $user->role === Role::PATIENT ? Response::allow() : Response::denyAsNotFound();
+            return $user->role === Role::PATIENT ? Response::allow() : Response::deny();
         });
         // --------------------------------------------------------------------------------------
+
+
 
         Gate::define('profile-exists', function (User $user) {
             if ($user->role === Role::DOCTOR && ! $user->doctorProfile()->exists()) {
@@ -56,7 +60,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         Gate::define('doctor-profile-verified', function (User $user) {
-            if ($user->role === Role::DOCTOR && $user->doctorProfile()->verified_at === null) {
+            if ($user->role === Role::DOCTOR && $user->doctorProfile->verified_at === null) {
                 return Response::deny('Your profile is not verified');
             }
 

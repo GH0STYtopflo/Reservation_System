@@ -5,17 +5,18 @@ namespace App\Actions;
 use App\Enums\AvailabilityDefType;
 use App\Models\DoctorProfile;
 use Carbon\Carbon;
+use Carbon\CarbonImmutable;
 
 class AppointmentTimeValid implements Action
 {
-    public static function execute(Carbon $datetime, DoctorProfile $doctor): bool
+    public static function execute(CarbonImmutable $datetime, DoctorProfile $doctor): bool
     {
         $availabilities = $doctor->availabilities()
             ->where('type', AvailabilityDefType::ONCE)
             ->where('date', $datetime)
             ->get();
 
-        $availabilities->concat(
+        $availabilities = $availabilities->concat(
             $doctor->availabilities()
             ->where('type', AvailabilityDefType::RECURRING)
             ->get()
