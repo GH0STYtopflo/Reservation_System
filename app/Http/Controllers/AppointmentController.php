@@ -5,6 +5,10 @@ namespace App\Http\Controllers;
 use App\Actions\AppointmentTimeValid;
 use App\Enums\AppointmentStatus;
 use App\Enums\Role;
+use App\Events\AppointmentApproved;
+use App\Events\AppointmentCancelled;
+use App\Events\AppointmentRescheduled;
+use App\Events\AppointmentReserved;
 use App\Http\Requests\Appointment\CancelAppointmentRequest;
 use App\Http\Requests\Appointment\RescheduleAppointmentRequest;
 use App\Http\Requests\Appointment\StoreAppointmentRequest;
@@ -16,9 +20,9 @@ use Auth;
 use Carbon\Carbon;
 use Carbon\CarbonImmutable;
 use Gate;
-use http\Exception\RuntimeException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Response;
+use RuntimeException;
 
 class AppointmentController extends Controller
 {
@@ -60,13 +64,8 @@ class AppointmentController extends Controller
             'patient_note' => $data['patient_notes'],
         ]);
 
-        $job = new RemindAppointment($patient->user, $app);
 
-        if ($datetime->gt(CarbonImmutable::now()->addHours(24))) {
-            dispatch($job)->delay($datetime->subDay());
-        } else {
-            dispatch($job);
-        }
+        event(new AppointmentReserved($app));
 
         return $app->toResource();
     }
@@ -134,13 +133,7 @@ class AppointmentController extends Controller
                 409);
         }
 
-        $job = new RemindAppointment($appointment->patient->user, $appointment);
-
-        if ($datetime->gt(CarbonImmutable::now()->addHours(24))) {
-            dispatch($job)->delay($datetime->subDay());
-        } else {
-            dispatch($job);
-        }
+        event(new AppointmentRescheduled($appointment));
 
         return $appointment->unsetRelation('patient')->unsetRelation('doctor')->toResource();
     }
@@ -174,6 +167,8 @@ class AppointmentController extends Controller
 
         $appointment->save();
 
+        event(new AppointmentCancelled($appointment));
+
         return $appointment->unsetRelation('patient')->toResource();
     }
 
@@ -191,6 +186,8 @@ class AppointmentController extends Controller
         $appointment->status = AppointmentStatus::APPROVED;
 
         $appointment->save();
+
+        event(new AppointmentApproved($appointment));
 
         return $appointment->toResource();
     }
