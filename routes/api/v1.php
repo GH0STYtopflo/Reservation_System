@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AvailabilityController;
@@ -18,9 +19,9 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 
-Route::get('test', function () {
-    dd(DB::select('SHOW TIME ZONE'));
-});
+//Route::get('test', function () {
+//    dd(DB::select('SHOW TIME ZONE'));
+//});
 
 /*
 |--------------------------------------------------------------------------
@@ -198,5 +199,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::resource('specialties', SpecialtyController::class)
             ->only(['store', 'update', 'destroy']);
+
+        Route::get('analytics', [AnalyticsController::class, 'getAnalytics']);
     });
 });
