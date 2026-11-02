@@ -37,7 +37,7 @@ class AppointmentPolicy
         return false;
     }
 
-    public function approve(User $user, Appointment $appointment): bool
+    public function approveComplete(User $user, Appointment $appointment): bool
     {
         return $user->role === Role::DOCTOR && $appointment->doctor->user->is($user);
     }

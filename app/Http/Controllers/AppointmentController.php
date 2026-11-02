@@ -132,9 +132,20 @@ class AppointmentController extends Controller
 
     public function approveAppointment(Appointment $appointment)
     {
-        Gate::authorize('approve', $appointment);
+        Gate::authorize('approve-complete', $appointment);
 
         $appointment->status = AppointmentStatus::APPROVED;
+
+        $appointment->save();
+
+        return $appointment->toResource();
+    }
+
+    public function completeAppointment(Appointment $appointment)
+    {
+        Gate::authorize('approve-complete', $appointment);
+
+        $appointment->status = AppointmentStatus::COMPLETED;
 
         $appointment->save();
 

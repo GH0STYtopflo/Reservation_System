@@ -179,6 +179,10 @@ Route::middleware('auth:sanctum')->group(function () {
             ->middleware('can:doctor-access')
             ->whereNumber('appointment');
 
+        Route::patch('appointments/{appointment}:complete', [AppointmentController::class, 'completeAppointment'])
+            ->middleware('can:doctor-access')
+            ->whereNumber('appointment');
+
         // This reschedules the appointment
         Route::put('appointments/{appointment}', [AppointmentController::class, 'rescheduleAppointment'])
             ->middleware('can.any:patient-access,doctor-access');
