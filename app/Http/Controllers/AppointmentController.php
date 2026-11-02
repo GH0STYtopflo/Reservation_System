@@ -11,6 +11,7 @@ use App\Http\Requests\Appointment\StoreAppointmentRequest;
 use App\Http\Requests\Appointment\UpdateAppointmentRequest;
 use App\Models\Appointment;
 use App\Models\DoctorProfile;
+use Auth;
 use Carbon\Carbon;
 use Carbon\CarbonImmutable;
 use Gate;
@@ -85,8 +86,21 @@ class AppointmentController extends Controller
 
         $datetime = CarbonImmutable::parse($request->validated()['datetime']);
 
+        $user = Auth::user();
+
+        if (
+            $appointment->status === AppointmentStatus::CANCELLED ||
+            $appointment->status === AppointmentStatus::COMPLETED ||
+            CarbonImmutable::parse($appointment->end_at)->lt(now())
+        ) {
+            return Response::json([
+                "message" => "The appointment cannot be rescheduled.",
+            ], 409);
+        }
+
+
         try {
-            $appointment = DB::transaction(function () use ($request, $appointment, $datetime) {
+            $appointment = DB::transaction(function () use ($request, $appointment, $datetime, $user) {
                 $appointment->delete();
 
                 if (!AppointmentTimeValid::execute($datetime, $appointment->doctor)) {
@@ -95,6 +109,10 @@ class AppointmentController extends Controller
 
                 $appointment->start_at = $datetime;
                 $appointment->end_at = $datetime->addMinutes(30);
+
+                if ($user->role === Role::PATIENT) {
+                    $appointment->status = AppointmentStatus::PENDING;
+                }
 
                 $appointment->save();
 
@@ -107,7 +125,7 @@ class AppointmentController extends Controller
                 409);
         }
 
-        return $appointment->toResource();
+        return $appointment->unsetRelation('patient')->unsetRelation('doctor')->toResource();
     }
 
     public function cancelAppointment(CancelAppointmentRequest $request, Appointment $appointment)
@@ -119,6 +137,18 @@ class AppointmentController extends Controller
                 "message" => "The appointment cannot be cancelled.",
             ],
                 409);
+        }
+
+        if ($appointment->status === AppointmentStatus::COMPLETED) {
+            return Response::json([
+                "message" => "A completed appointment cannot be cancelled.",
+            ], 409);
+        }
+
+        if ($appointment->status === AppointmentStatus::CANCELLED) {
+            return Response::json([
+                "message" => "Appointment already cancelled.",
+            ], 409);
         }
 
         $appointment->status = AppointmentStatus::CANCELLED;
@@ -134,6 +164,13 @@ class AppointmentController extends Controller
     {
         Gate::authorize('approve-complete', $appointment);
 
+        if ($appointment->status === AppointmentStatus::CANCELLED ||
+            CarbonImmutable::parse($appointment->start_at)->lt(now())) {
+            return Response::json([
+                "message" => "The appointment cannot be approved.",
+            ], 409);
+        }
+
         $appointment->status = AppointmentStatus::APPROVED;
 
         $appointment->save();
@@ -144,6 +181,13 @@ class AppointmentController extends Controller
     public function completeAppointment(Appointment $appointment)
     {
         Gate::authorize('approve-complete', $appointment);
+
+        if ($appointment->status === AppointmentStatus::CANCELLED ||
+            CarbonImmutable::parse($appointment->start_at)->lt(now())) {
+            return Response::json([
+                "message" => "The appointment cannot be completed.",
+            ], 409);
+        }
 
         $appointment->status = AppointmentStatus::COMPLETED;
 
