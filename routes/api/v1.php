@@ -75,7 +75,7 @@ Route::middleware('auth:sanctum')->group(function (): void {
         ->middleware('can:admin-access');
 
     Route::post('patients', [PatientProfileController::class, 'store'])
-        ->middleware('can.any:admin-access,patient-access');
+        ->middleware('can.any:admin-access,patient-access')->name('patients.store');
 
     Route::get('patients/{patientProfile}', [PatientProfileController::class, 'show'])
         ->middleware([
@@ -117,7 +117,7 @@ Route::middleware('auth:sanctum')->group(function (): void {
     */
 
     Route::post('doctors', [DoctorProfileController::class, 'store'])
-        ->middleware('can.any:admin-access,doctor-access');
+        ->middleware('can.any:admin-access,doctor-access')->name('doctors.store');
 
     Route::patch('doctors/{doctorProfile}', [DoctorProfileController::class, 'update'])
         ->middleware([

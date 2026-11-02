@@ -35,7 +35,7 @@ class Greeting extends Notification
             ->line('We are glad to have you with us!')
             ->line('Please complete your profile to get started. Send a POST request here because we don\'t have a frontend yet')
             ->action('Complete Profile', route($profileRoute))
-            ->salutation('Best regards, '.config('app.name'));
+            ->salutation('Best regards, '. config('app.name'));
     }
 
     public function toArray(object $notifiable): array

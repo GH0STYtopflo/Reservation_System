@@ -9,6 +9,8 @@ class UserObserver
 {
     public function created(User $user): void
     {
-        $user->notify(new Greeting);
+        if ($user->email != null) {
+            $user->notify(new Greeting());
+        }
     }
 }

@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Enums\Role;
 use App\Models\User;
+use App\Observers\UserObserver;
 use Gate;
 use Illuminate\Auth\Access\Response;
 use Illuminate\Database\Eloquent\Model;
@@ -26,6 +27,9 @@ class AppServiceProvider extends ServiceProvider
     {
         // We can be responsible about the data we feed into our model instances
         Model::unguard();
+
+        // Register the user observer
+        User::observe(UserObserver::class);
 
         // --------------------------------------------------------------------------------------
         // ---------------------------- Tier 1 authorization ------------------------------------
