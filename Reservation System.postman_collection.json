@@ -1,0 +1,1612 @@
+{
+  "info": {
+    "_postman_id": "22774f22-f78a-4e4d-a8e6-04ba65577de2",
+    "name": "Reservation System",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "55882195",
+    "_collection_link": "https://go.postman.co/collection/55882195-22774f22-f78a-4e4d-a8e6-04ba65577de2?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"phone_number\": \"00000000000\",\n    \"password\": \"StrongAsHellPass\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base}}/auth:login",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "auth:login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"phone_number\": \"09999999999\",\n    \"email\": \"mail@test.com\",\n    \"password\": \"StrongAsHellPass\",\n    \"role\": \"doctor\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base}}/auth:register",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "auth:register"
+              ]
+            },
+            "description": "Publicly accessible endpoint for user registration. Requires a phone number and password, with an optional email address. Limited to 6 requests per minute using throttle middleware.\n\nRequest Body:  \nphone_number (string, required)  \npassword (string, required)  \nemail (string, optional)\n\nResponses:  \n201 — User registered successfully.  \n422 — Validation failed.  \n429 — Too many requests."
+          },
+          "response": []
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "MTd8dHE1ZmhaeUR4UDJpNzJxSEwydUoyYXA1cElTanBFa1JqejZod0pibGM1NzA0Njhj",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base}}/auth:logout",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "auth:logout"
+              ]
+            },
+            "description": "Authenticated endpoint for logging out the current user by invalidating their authentication token.\n\nResponses:  \n204 — Successfully logged out.  \n401 — Unauthorized. The provided authentication token is invalid or missing."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "City",
+      "item": [
+        {
+          "name": "List",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "MXwwWjBVbTZjeFk5dU5ycnJVaXJkYWdHRzdwS29HQjBKTWQxMkQ3Vm9JNzc3MTAxNGM=",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base}}/cities",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "cities"
+              ]
+            },
+            "description": "Publicly accessible endpoint for retrieving the list of available cities.\n\nResponses:  \n200 — Successfully retrieved the collection of cities."
+          },
+          "response": []
+        },
+        {
+          "name": "Create City",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "MnwybFJhMXM0UmhGR0xqTEt2SWJOZDFCNHJYZVNTdFNEcG9UVUlvTXBBMjY0YjBiMTI",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Shiraz\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base}}/cities",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "cities"
+              ]
+            },
+            "description": "Admin-only endpoint for creating a new city.\n\nResponses:  \n201 — City created successfully. Returns the created city resource.  \n403 — Forbidden. User does not have admin privileges.  \n422 — The provided city name is not acceptable."
+          },
+          "response": []
+        },
+        {
+          "name": "Show",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base}}/cities/1",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "cities",
+                "1"
+              ]
+            },
+            "description": "Publicly accessible endpoint for retrieving the details of a specific city.\n\nResponses:  \n200 — Successfully retrieved the city details."
+          },
+          "response": []
+        },
+        {
+          "name": "Update City",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "MnwybFJhMXM0UmhGR0xqTEt2SWJOZDFCNHJYZVNTdFNEcG9UVUlvTXBBMjY0YjBiMTI",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Isfahan\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base}}/cities/6",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "cities",
+                "6"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "MnwybFJhMXM0UmhGR0xqTEt2SWJOZDFCNHJYZVNTdFNEcG9UVUlvTXBBMjY0YjBiMTI",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base}}/cities/6",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "cities",
+                "6"
+              ]
+            },
+            "description": "Admin-only endpoint for deleting a city identified by its ID in the path.\n\nResponses:  \n204 — City deleted successfully.  \n403 — Forbidden. User does not have admin privileges.  \n404 — City not found."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Specialty",
+      "item": [
+        {
+          "name": "Create",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "M3xMRXBFNlMyUm9zUUl0R1l5aHJHQWFZZUs1bnF2T1oyY05xRjRUNHJ5MWQxMmRlYWQ",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"title\": \"MUSIC\",\n    \"description\": \"CARTIIIIIIIER\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base}}/specialties",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "specialties"
+              ]
+            },
+            "description": "Admin-only endpoint for creating a new specialty.\n\nRequest Body:  \ntitle (string, required)  \ndescription (string, optional)\n\nResponses:  \n201 — Specialty created successfully. Returns the created specialty resource.  \n403 — Forbidden. User does not have admin privileges.  \n422 — Validation failed."
+          },
+          "response": []
+        },
+        {
+          "name": "List",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base}}/specialties",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "specialties"
+              ]
+            },
+            "description": "Publicly accessible endpoint for retrieving the collection of available specialties.\n\nResponses:  \n200 — Successfully retrieved the collection of specialties."
+          },
+          "response": []
+        },
+        {
+          "name": "Show",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "MXxLSUd6THdESElNSWxlM0FjSElyWXZlcVVkcGVlYXBSWUJockQ4S21FYzQzZWExYTg=",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base}}/specialties/1",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "specialties",
+                "1"
+              ]
+            },
+            "description": "Publicly accessible endpoint for retrieving the details of a specific specialty.\n\nResponses:  \n200 — Successfully retrieved the specialty details.  \n404 — Specialty not found."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "M3xMRXBFNlMyUm9zUUl0R1l5aHJHQWFZZUs1bnF2T1oyY05xRjRUNHJ5MWQxMmRlYWQ",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base}}/specialties/1",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "specialties",
+                "1"
+              ]
+            },
+            "description": "Admin-only endpoint for deleting a specialty identified by its ID in the path.\n\nResponses:  \n204 — Specialty deleted successfully.  \n403 — Forbidden. User does not have admin privileges.  \n404 — Specialty not found."
+          },
+          "response": []
+        },
+        {
+          "name": "Update",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "M3xMRXBFNlMyUm9zUUl0R1l5aHJHQWFZZUs1bnF2T1oyY05xRjRUNHJ5MWQxMmRlYWQ",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"title\": \"Jordan T C\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base}}/specialties/2",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "specialties",
+                "2"
+              ]
+            },
+            "description": "Admin-only endpoint for updating an existing specialty.\n\nRequest Body:  \ntitle (string, optional)  \ndescription (string, optional)\n\nResponses:  \n200 — Specialty updated successfully. Returns the updated specialty resource.  \n403 — Forbidden. User does not have admin privileges.  \n404 — Specialty not found.  \n422 — Validation failed."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Doctor",
+      "item": [
+        {
+          "name": "Create",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "M3xMRXBFNlMyUm9zUUl0R1l5aHJHQWFZZUs1bnF2T1oyY05xRjRUNHJ5MWQxMmRlYWQ",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"Ali\",\n  \"last_name\": \"Ahmadi\",\n  \"gender\": true,\n  \"education\": \"Doctor of Medicine\",\n  \"specialty_ids\": [3],\n  \"city_id\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base}}/doctors",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "doctors"
+              ]
+            },
+            "description": "Authenticated endpoint for creating a doctor profile. Accessible to admins and doctors. Admins must provide a `user_id` to associate the profile with an existing user. Doctors cannot provide this field.\n\nRequest Body:  \nfirst_name (string, required, max 255)  \nlast_name (string, required, max 255)  \ngender (boolean, required)  \neducation (string, required)  \nspecialty_ids (array of integers, required, must reference existing specialties without duplicates)  \ncity_id (integer, required, must reference an existing city)  \nuser_id (integer, required for admins, prohibited for doctors; must reference an existing user)\n\nResponses:  \n201 — Doctor profile created successfully. Returns the created doctor resource.  \n401 — Unauthenticated.  \n403 — Forbidden. User does not have permission to create a doctor profile.  \n409 — The user already has a doctor profile.  \n422 — Validation failed or the specified user does not have the doctor role."
+          },
+          "response": []
+        },
+        {
+          "name": "Update",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "M3xMRXBFNlMyUm9zUUl0R1l5aHJHQWFZZUs1bnF2T1oyY05xRjRUNHJ5MWQxMmRlYWQ",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"city_id\": 2,\n    \"first_name\": \"Jordan\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base}}/doctors/2",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "doctors",
+                "2"
+              ]
+            },
+            "description": "Authenticated endpoint for updating an existing doctor profile. Accessible to admins and the doctor who owns the profile. All request fields are optional.\n\nRequest Body:  \nfirst_name (string, optional, max 255)  \nlast_name (string, optional, max 255)  \ngender (boolean, optional)  \neducation (string, optional)  \nspecialty_ids (array of integers, optional; must reference existing specialties without duplicates)  \ncity_id (integer, optional; must reference an existing city)\n\nResponses:  \n200 — Doctor profile updated successfully. Returns the updated doctor resource.  \n401 — Unauthenticated.  \n403 — Forbidden. User does not have permission to update this profile.  \n404 — Doctor profile not found.  \n422 — Validation failed."
+          },
+          "response": []
+        },
+        {
+          "name": "List",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base}}/doctors",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "doctors"
+              ]
+            },
+            "description": "Publicly accessible endpoint for retrieving a collection of doctor profiles.\n\nResponses:  \n200 — Successfully retrieved the collection of doctor profiles."
+          },
+          "response": []
+        },
+        {
+          "name": "Show",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base}}/doctors/1",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "doctors",
+                "1"
+              ]
+            },
+            "description": "Publicly accessible endpoint for retrieving the profile of a specific doctor.\n\nResponses:  \n200 — Successfully retrieved the doctor profile.  \n404 — Doctor not found."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Specialties",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "M3xMRXBFNlMyUm9zUUl0R1l5aHJHQWFZZUs1bnF2T1oyY05xRjRUNHJ5MWQxMmRlYWQ",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"specialty_ids\": [3]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base}}/doctors/2/specialties",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "doctors",
+                "2",
+                "specialties"
+              ]
+            },
+            "description": "Authenticated endpoint for updating a doctor's specialties. Accessible to admins and the doctor who owns the profile.\n\nRequest Body:  \nspecialty_ids (array of integers, required; doctor specialty IDs)\n\nResponses:  \n200 — Doctor specialties updated successfully.  \n401 — Unauthenticated.  \n403 — Forbidden. User does not have permission to update these specialties.  \n404 — Doctor profile not found.  \n422 — Validation failed."
+          },
+          "response": []
+        },
+        {
+          "name": "Verify",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "M3xVR04zTDg1cThzS0R2MW1tQ3JTNEw2OW1KZHFINGZ4ejRXbktXTk1iNTBmNzlkYjk=",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{base}}/doctors/1:verify",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "doctors",
+                "1:verify"
+              ]
+            },
+            "description": "Admin-only endpoint for verifying a doctor profile identified by its ID in the path.\n\nResponses:  \n204 — Doctor profile verified successfully.  \n401 — Unauthenticated.  \n403 — Forbidden. User does not have admin privileges.  \n404 — Doctor profile not found."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Patient",
+      "item": [
+        {
+          "name": "List",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "OHxPOEhYdkFLcm5xVUZQVWNLRkVmTU5NQUhuZ3MxazdHb2RiMWJaeVFGMDEzZDVmNGE",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base}}/patients",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "patients"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Show",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "N3xBSmFHVjh2R3lOTERnRTdxVUZzNmpZaXZyY2N3NVhJNDIwZDNIUHZWZDk4Y2UyYzU=",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base}}/patients/2",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "patients",
+                "2"
+              ]
+            },
+            "description": "Authenticated endpoint for retrieving a patient profile identified by its ID in the path. Accessible to admins, the patient who owns the profile, and doctors who have had an appointment with the patient.\n\nResponses:  \n200 — Patient profile retrieved successfully.  \n401 — Unauthenticated.  \n403 — Forbidden. User does not have permission to access this profile.  \n404 — Patient profile not found."
+          },
+          "response": []
+        },
+        {
+          "name": "Update",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "N3xBSmFHVjh2R3lOTERnRTdxVUZzNmpZaXZyY2N3NVhJNDIwZDNIUHZWZDk4Y2UyYzU=",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base}}/patients/2",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "patients",
+                "2"
+              ]
+            },
+            "description": "Authenticated endpoint for updating a patient profile. All request fields are optional.\n\nRequest Body:  \nfirst_name (string, optional, max 255)  \nlast_name (string, optional, max 255)  \ngender (boolean, optional)  \nbirth_date (date, optional, format: Y-m-d, cannot be in the future)  \nblood_type (string, optional, one of: A+, A-, B+, B-, AB+, AB-, O+, O-)  \ncity_id (integer, optional, must reference an existing city)\n\nResponses:  \n200 — Patient profile updated successfully. Returns the updated patient resource.  \n401 — Unauthenticated.  \n403 — Forbidden. User does not have permission to update this profile.  \n404 — Patient profile not found.  \n422 — Validation failed."
+          },
+          "response": []
+        },
+        {
+          "name": "Create",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "NXw2OUROWFQxN05lR1lzSGZWamZnV2s2VHlNMHc0dlBnc3RGMjNCc2VhMWM0ZGQ5MmE",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"first_name\": \"Soap\",\n    \"last_name\": \"McTavish\",\n    \"gender\": false,\n    \"birth_date\": \"1994-06-12\",\n    \"blood_type\": \"A+\",\n    \"city_id\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base}}/patients",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "patients"
+              ]
+            },
+            "description": "Authenticated endpoint for creating a patient profile. Admins must provide a `user_id` to associate the profile with an existing user. Other users cannot provide this field.\n\nRequest Body:  \nfirst_name (string, required, max 255)  \nlast_name (string, required, max 255)  \ngender (boolean, required)  \nbirth_date (date, required, format: Y-m-d, cannot be in the future)  \nblood_type (string, required, one of: A+, A-, B+, B-, AB+, AB-, O+, O-)  \ncity_id (integer, required, must reference an existing city)  \nuser_id (integer, required for admins, prohibited for other users)\n\nResponses:  \n201 — Patient profile created successfully. Returns the created patient resource.  \n401 — Unauthenticated.  \n403 — Forbidden.  \n422 — Validation failed."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Medical History",
+      "item": [
+        {
+          "name": "List",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "OXxQek1vd1BmeUpkcUM5VkxBR281dGNxRDF5eEVlbkRUZko3a05iQXlXNzQ2NWM0MzM=",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base}}/patients/2/medical_history",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "patients",
+                "2",
+                "medical_history"
+              ]
+            },
+            "description": "Authenticated endpoint for retrieving a patient's medical history. Accessible to admins, the patient who owns the profile, and doctors who have had an appointment with the patient.\n\nResponses:  \n200 — Successfully retrieved the collection of medical history records.  \n401 — Unauthenticated.  \n403 — Forbidden. User does not have permission to access this medical history.  \n404 — Patient not found."
+          },
+          "response": []
+        },
+        {
+          "name": "Show",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base}}/patients/1/medical_history/1",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "patients",
+                "1",
+                "medical_history",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"titile\": \"Cronical Illness\",\n    \"description\": \"He has diabetes\",\n    \"type:\": \"condition\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base}}/patients/1/medical_histories",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "patients",
+                "1",
+                "medical_histories"
+              ]
+            },
+            "description": "Authenticated endpoint for creating a medical history record for a patient.\n\nRequest Body:  \ntitle (string, required, max 255)  \ndescription (string, required)  \ntype (string, required; one of: condition, surgery, medication)\n\nResponses:  \n201 — Medical history record created successfully. Returns the created resource.  \n401 — Unauthenticated.  \n403 — Forbidden. User does not have permission to create this record.  \n422 — Validation failed."
+          },
+          "response": []
+        },
+        {
+          "name": "Update",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"description\": \"idk\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base}}/patients/1/medical_histories/1",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "patients",
+                "1",
+                "medical_histories",
+                "1"
+              ]
+            },
+            "description": "Authenticated endpoint for updating an existing medical history record.\n\nRequest Body:  \ntitle (string, optional, max 255)  \ndescription (string, optional)  \ntype (string, optional; one of: condition, surgery, medication)\n\nResponses:  \n200 — Medical history record updated successfully. Returns the updated resource.  \n401 — Unauthenticated.  \n403 — Forbidden. User does not have permission to update this record.  \n404 — Medical history record not found.  \n422 — Validation failed."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base}}/patients/2/medical_history/1",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "patients",
+                "2",
+                "medical_history",
+                "1"
+              ]
+            },
+            "description": "Authenticated endpoint for deleting an existing medical history record.\n\nResponses:  \n204 — Medical history record deleted successfully.  \n401 — Unauthenticated.  \n403 — Forbidden. User does not have permission to delete this record.  \n404 — Medical history record not found."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Availability",
+      "item": [
+        {
+          "name": "Create",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "MnxBQVFEQzZKanprVm9SdlhqNlYxWVlmQzlPYlVYcHN3SHpodEtVUElwNTgxNWIzMDg=",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n\"type\": \"recurring\",\n\"days_of_week\": [\"SA\", \"SU\", \"WE\"],\n\"shift_start_at\": \"16:00\",\n\"shift_end_at\": \"22:30\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base}}/doctors/1/availabilities",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "doctors",
+                "1",
+                "availabilities"
+              ]
+            },
+            "description": "Authenticated endpoint for creating a doctor availability. Accessible to authorized doctors.\n\nRequest Body:  \ntype (string, required; one of: recurring, once)  \ndays_of_week (array, required for recurring availability; prohibited for once availability)  \ndays_of_week.\\* (string; one of: MO, TU, WE, TH, FR, SA, SU; values must be distinct)  \ndates (array, required for once availability; prohibited for recurring availability)  \ndates.\\* (date, format Y-m-d; must be today or later)  \nshift_start_at (time, required; format H)  \nshift_end_at (time, required; format H; must be after shift_start_at)\n\nResponses:  \n201 — Availability created successfully.  \n401 — Unauthenticated.  \n403 — Forbidden. User does not have permission to create this availability.  \n409 — Conflict. Availability conflicts with an existing availability."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "MTF8RG1hZU5ETnkzWlhMSG92REk3R216NmgyeDduY1BRcjhoeW96eG1ZVGU1NDU1MWJm",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base}}/doctors/1/availabilities/7",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "doctors",
+                "1",
+                "availabilities",
+                "7"
+              ]
+            },
+            "description": "Authenticated endpoint for deleting an existing doctor availability.\n\nResponses:  \n204 — Availability deleted successfully.  \n401 — Unauthenticated.  \n403 — Forbidden. User does not have permission to delete this availability.  \n404 — Availability not found."
+          },
+          "response": []
+        },
+        {
+          "name": "List Available Slots",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base}}/doctors/1/available-slots?date=2026-11-04",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "doctors",
+                "1",
+                "available-slots"
+              ],
+              "query": [
+                {
+                  "key": "date",
+                  "value": "2026-11-04"
+                }
+              ]
+            },
+            "description": "Publicly accessible endpoint for listing available appointment slots for a doctor.\n\nResponses:  \n200 — Available slots retrieved successfully. Returns a collection of available appointment slots."
+          },
+          "response": []
+        },
+        {
+          "name": "Show",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "MTF8RG1hZU5ETnkzWlhMSG92REk3R216NmgyeDduY1BRcjhoeW96eG1ZVGU1NDU1MWJm",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base}}/doctors/1/availabilities/8",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "doctors",
+                "1",
+                "availabilities",
+                "8"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "MXw3dVJXQUl3U3MzanlSNTFGTUFka1BkSmROc1EzZ2psTkVsS044WWJZNDllMzZlOWE",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"new_days\": [\"FR\"]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base}}/doctors/1/availabilities/6",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "doctors",
+                "1",
+                "availabilities",
+                "6"
+              ]
+            },
+            "description": "Authenticated endpoint for updating an existing doctor availability.\n\nRequest Body:  \nshift_start_at (time, optional; format H)  \nshift_end_at (time, optional; format H)  \nnew_date (date, optional; format Y-m-d; only applicable to once availabilities)  \nnew_days (array, optional; at least one day; only applicable to recurring availabilities)  \nnew_days.\\* (string; one of: MO, TU, WE, TH, FR, SA, SU)\n\nResponses:  \n200 — Availability updated successfully. Returns the updated resource.  \n401 — Unauthenticated.  \n403 — Forbidden. User does not have permission to update this availability.  \n404 — Availability not found.  \n422 — Validation failed."
+          },
+          "response": []
+        },
+        {
+          "name": "List",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "MTF8RG1hZU5ETnkzWlhMSG92REk3R216NmgyeDduY1BRcjhoeW96eG1ZVGU1NDU1MWJm",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base}}/doctors/1/availabilities",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "doctors",
+                "1",
+                "availabilities"
+              ]
+            },
+            "description": "Authenticated endpoint for listing doctor availabilities.\n\nResponses:  \n200 — Availabilities retrieved successfully. Returns a collection of availability resources.  \n401 — Unauthenticated.  \n403 — Forbidden. User does not have permission to view these availabilities."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Unavailability",
+      "item": [
+        {
+          "name": "Create",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "MnxBQVFEQzZKanprVm9SdlhqNlYxWVlmQzlPYlVYcHN3SHpodEtVUElwNTgxNWIzMDg=",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"start_at\": \"2026-11-04 18:00:00\",\n    \"end_at\": \"2026-11-04 18:10:00\",\n    \"reason\": \"I will be undergoing a surgery myself\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base}}/doctors/1/unavailabilities/",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "doctors",
+                "1",
+                "unavailabilities",
+                ""
+              ]
+            },
+            "description": "Authenticated endpoint for creating a doctor unavailability period.\n\nRequest Body:  \nstart_at (datetime, required; must be today or later and before or equal to end_at)  \nend_at (datetime, required; must be today or later and after or equal to start_at)  \nreason (string, optional)\n\nResponses:  \n201 — Unavailability created successfully.  \n401 — Unauthenticated.  \n403 — Forbidden. User does not have permission to create this unavailability.  \n409 — Conflict unavailability period.  \n422 — Validation failed."
+          },
+          "response": []
+        },
+        {
+          "name": "Update",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "MTF8RG1hZU5ETnkzWlhMSG92REk3R216NmgyeDduY1BRcjhoeW96eG1ZVGU1NDU1MWJm",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"start_at\": \"2026-11-05 09:00:00\",\n  \"end_at\": \"2026-11-05 12:00:00\",\n  \"reason\": \"Personal leave\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base}}/doctors/1/unavailabilities/1",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "doctors",
+                "1",
+                "unavailabilities",
+                "1"
+              ]
+            },
+            "description": "Authenticated endpoint for updating an existing doctor unavailability period.\n\nRequest Body:  \nstart_at (datetime, optional; must be today or later and before or equal to end_at)  \nend_at (datetime, optional; must be today or later and after or equal to start_at)  \nreason (string, optional)\n\nResponses:  \n200 — Unavailability updated successfully. Returns the updated resource.  \n401 — Unauthenticated.  \n403 — Forbidden. User does not have permission to update this unavailability.  \n404 — Unavailability not found.  \n422 — Validation failed."
+          },
+          "response": []
+        },
+        {
+          "name": "Show",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "MTF8RG1hZU5ETnkzWlhMSG92REk3R216NmgyeDduY1BRcjhoeW96eG1ZVGU1NDU1MWJm",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base}}/doctors/1/unavailabilities/1",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "doctors",
+                "1",
+                "unavailabilities",
+                "1"
+              ]
+            },
+            "description": "Authenticated endpoint for retrieving a doctor unavailability period.\n\nResponses:  \n200 — Unavailability retrieved successfully. Returns the unavailability resource.  \n401 — Unauthenticated.  \n403 — Forbidden. User does not have permission to view this unavailability.  \n404 — Unavailability not found."
+          },
+          "response": []
+        },
+        {
+          "name": "New Request",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "MTF8RG1hZU5ETnkzWlhMSG92REk3R216NmgyeDduY1BRcjhoeW96eG1ZVGU1NDU1MWJm",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base}}/doctors/1/unavailabilities/1",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "doctors",
+                "1",
+                "unavailabilities",
+                "1"
+              ]
+            },
+            "description": "Authenticated endpoint for deleting an existing doctor unavailability period.\n\nResponses:  \n204 — Unavailability deleted successfully.  \n401 — Unauthenticated.  \n403 — Forbidden. User does not have permission to delete this unavailability.  \n404 — Unavailability not found."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Appointment",
+      "item": [
+        {
+          "name": "Create",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "MXxqeFBRZ0doVVRWUFd4V0RoT1NrbXhCZzB0REE4WHppOGpPM3JESUN0OWVkZjQ3MzY=",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"datetime\": \"2026-11-04 16:30:00\",\n    \"patient_notes\": \"I'm on the death bed already\",\n    \"doctor_id\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base}}/appointments",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "appointments"
+              ]
+            },
+            "description": "Authenticated endpoint for booking an appointment. Patients must specify the doctor they wish to book with.\n\nRequest Body:  \ndatetime (datetime, required; must be today or later)  \npatient_notes (string, optional)  \ndoctor_id (integer, required for patients; must reference an existing doctor profile)\n\nResponses:  \n201 — Appointment created successfully. Returns the created appointment resource.  \n401 — Unauthenticated.  \n403 — Forbidden. User does not have permission to create this appointment.  \n409 — Conflict. The requested appointment slot is no longer available.  \n422 — Validation failed."
+          },
+          "response": []
+        },
+        {
+          "name": "List",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "MnxBQVFEQzZKanprVm9SdlhqNlYxWVlmQzlPYlVYcHN3SHpodEtVUElwNTgxNWIzMDg=",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base}}/appointments",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "appointments"
+              ]
+            },
+            "description": "Authenticated endpoint for listing appointments. Patients can view their own appointments, doctors can view their own appointments, and admins can view all appointments.\n\nResponses:  \n200 — Appointments retrieved successfully. Returns a collection of appointment resources.  \n401 — Unauthenticated.  \n403 — Forbidden. User does not have permission to view these appointments."
+          },
+          "response": []
+        },
+        {
+          "name": "Show",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "MnxBQVFEQzZKanprVm9SdlhqNlYxWVlmQzlPYlVYcHN3SHpodEtVUElwNTgxNWIzMDg=",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base}}/appointments/5",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "appointments",
+                "5"
+              ]
+            },
+            "description": "Authenticated endpoint for retrieving an appointment. Accessible to the patient or doctor associated with the appointment, and to admins.\n\nResponses:  \n200 — Appointment retrieved successfully. Returns the appointment resource.  \n401 — Unauthenticated.  \n403 — Forbidden. User does not have permission to view this appointment.  \n404 — Appointment not found."
+          },
+          "response": []
+        },
+        {
+          "name": "Update",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "MXxqeFBRZ0doVVRWUFd4V0RoT1NrbXhCZzB0REE4WHppOGpPM3JESUN0OWVkZjQ3MzY=",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"patient_notes\": \"I have been experiencing occasional headaches and dizziness.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base}}/appointments/5",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "appointments",
+                "5"
+              ]
+            },
+            "description": "Authenticated endpoint for updating an existing appointment's patient notes.\n\nRequest Body:  \npatient_notes (string, optional; may be null)\n\nResponses:  \n200 — Appointment updated successfully. Returns the updated appointment resource.  \n401 — Unauthenticated.  \n403 — Forbidden. User does not have permission to update this appointment.  \n404 — Appointment not found.  \n422 — Validation failed."
+          },
+          "response": []
+        },
+        {
+          "name": "Reschedule",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "MXxqeFBRZ0doVVRWUFd4V0RoT1NrbXhCZzB0REE4WHppOGpPM3JESUN0OWVkZjQ3MzY=",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"datetime\": \"2026-11-04 17:30:00\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base}}/appointments/7",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "appointments",
+                "7"
+              ]
+            },
+            "description": "Authenticated endpoint for rescheduling an existing appointment.\n\nRequest Body:  \ndatetime (datetime, required; must be today or later)\n\nResponses:  \n200 — Appointment rescheduled successfully. Returns the updated appointment resource.  \n401 — Unauthenticated.  \n403 — Forbidden. User does not have permission to reschedule this appointment.  \n404 — Appointment not found.  \n409 — Conflict. The requested appointment slot is unavailable.  \n422 — Validation failed."
+          },
+          "response": []
+        },
+        {
+          "name": "Cancel",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "MXxqeFBRZ0doVVRWUFd4V0RoT1NrbXhCZzB0REE4WHppOGpPM3JESUN0OWVkZjQ3MzY=",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cancellation_reason\": \"Personal reasons\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base}}/appointments/7:cancel",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "appointments",
+                "7:cancel"
+              ]
+            },
+            "description": "Authenticated endpoint for cancelling an existing appointment.\n\nRequest Body:  \ncancellation_reason (string, optional; may be null)\n\nResponses:  \n200 — Appointment cancelled successfully. Returns the updated appointment resource.  \n401 — Unauthenticated.  \n403 — Forbidden. User does not have permission to cancel this appointment.  \n404 — Appointment not found.  \n422 — Validation failed."
+          },
+          "response": []
+        },
+        {
+          "name": "Approve",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "MnxBQVFEQzZKanprVm9SdlhqNlYxWVlmQzlPYlVYcHN3SHpodEtVUElwNTgxNWIzMDg=",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{base}}/appointments/7:approve",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "appointments",
+                "7:approve"
+              ]
+            },
+            "description": "Authenticated endpoint for approving an appointment. Accessible only to the doctor associated with the appointment.\n\nResponses:  \n200 — Appointment approved successfully. Returns the updated appointment resource.  \n401 — Unauthenticated.  \n403 — Forbidden. Only the assigned doctor can approve this appointment.  \n404 — Appointment not found.  \n409 — Appointment cannot be approved in its current state."
+          },
+          "response": []
+        },
+        {
+          "name": "Complete",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "NXxGajZjMUZJbGRoRDg3ZTBqTXRRU0tDSVFBbG56Qko0ck85MUVJR2NSNGM1MDQ3NGI",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{base}}/appointments/8:complete",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "appointments",
+                "8:complete"
+              ]
+            },
+            "description": "Authenticated endpoint for marking an appointment as completed. Accessible only to the doctor associated with the appointment.\n\nResponses:  \n200 — Appointment marked as completed successfully. Returns the updated appointment resource.  \n401 — Unauthenticated.  \n403 — Forbidden. Only the assigned doctor can complete this appointment.  \n404 — Appointment not found.  \n409 — Appointment cannot be completed in its current state."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "MnxBQVFEQzZKanprVm9SdlhqNlYxWVlmQzlPYlVYcHN3SHpodEtVUElwNTgxNWIzMDg=",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base}}/appointments/7",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "appointments",
+                "7"
+              ]
+            },
+            "description": "Authenticated endpoint for deleting an appointment. Accessible only to admins.\n\nResponses:  \n204 — Appointment deleted successfully.  \n401 — Unauthenticated.  \n403 — Forbidden. Only admins can delete appointments.  \n404 — Appointment not found."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Analytics",
+      "item": [
+        {
+          "name": "Show",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "M3xBWDNiRGZhQVQ5UGxaa2pZR0pTWGRyRmhuQ3NSSmVyc1c2UlI0YVFNMmE3MDRjN2Q=",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base}}/analytics",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "analytics"
+              ]
+            },
+            "description": "Authenticated endpoint for retrieving system-wide analytics and statistics. Accessible only to admins.\n\nResponses:  \n200 — Analytics retrieved successfully. Returns the requested analytics data.  \n401 — Unauthenticated.  \n403 — Forbidden. Only admins can access analytics."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Test",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base}}/test",
+          "host": [
+            "{{base}}"
+          ],
+          "path": [
+            "test"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
