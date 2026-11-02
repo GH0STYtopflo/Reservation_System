@@ -9,6 +9,7 @@ use App\Http\Requests\Appointment\CancelAppointmentRequest;
 use App\Http\Requests\Appointment\RescheduleAppointmentRequest;
 use App\Http\Requests\Appointment\StoreAppointmentRequest;
 use App\Http\Requests\Appointment\UpdateAppointmentRequest;
+use App\Jobs\RemindAppointment;
 use App\Models\Appointment;
 use App\Models\DoctorProfile;
 use Auth;
@@ -58,6 +59,14 @@ class AppointmentController extends Controller
             'status' => AppointmentStatus::PENDING,
             'patient_note' => $data['patient_notes'],
         ]);
+
+        $job = new RemindAppointment($patient->user, $app);
+
+        if ($datetime->gt(CarbonImmutable::now()->addHours(24))) {
+            dispatch($job)->delay($datetime->subDay());
+        } else {
+            dispatch($job);
+        }
 
         return $app->toResource();
     }
@@ -123,6 +132,14 @@ class AppointmentController extends Controller
                 "message" => "The appointment time is not valid.",
             ],
                 409);
+        }
+
+        $job = new RemindAppointment($appointment->patient->user, $appointment);
+
+        if ($datetime->gt(CarbonImmutable::now()->addHours(24))) {
+            dispatch($job)->delay($datetime->subDay());
+        } else {
+            dispatch($job);
         }
 
         return $appointment->unsetRelation('patient')->unsetRelation('doctor')->toResource();

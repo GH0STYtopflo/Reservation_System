@@ -10,6 +10,7 @@ use App\Http\Controllers\MedicalHistoryController;
 use App\Http\Controllers\PatientProfileController;
 use App\Http\Controllers\SpecialtyController;
 use App\Http\Controllers\UnavailabilityController;
+use App\Models\Appointment;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
@@ -19,9 +20,9 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 
-//Route::get('test', function () {
-//    dd(DB::select('SHOW TIME ZONE'));
-//});
+Route::get('test', function () {
+    dd(Appointment::find(500));
+});
 
 /*
 |--------------------------------------------------------------------------
