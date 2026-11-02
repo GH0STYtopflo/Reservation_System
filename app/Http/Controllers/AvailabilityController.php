@@ -54,24 +54,31 @@ class AvailabilityController extends Controller
 
             return \response($av->refresh()->toResource(), 201);
         } else {
-            $array = [];
 
-            // TODO: improvement possible with transaction
+            try {
+                $array = DB::transaction(function () use ($data, $doctorProfile) {
+                    $array = [];
 
-            foreach ($data['dates'] as $date) {
-                $av = $doctorProfile->availabilities()->make([
-                    'date' => $date,
-                    'shift_start_at' => $data['shift_start_at'],
-                    'shift_end_at' => $data['shift_end_at'],
-                    'type' => $data['type'],
-                ])->refresh();
+                    foreach ($data['dates'] as $date) {
+                        $av = $doctorProfile->availabilities()->make([
+                            'date' => $date,
+                            'shift_start_at' => $data['shift_start_at'],
+                            'shift_end_at' => $data['shift_end_at'],
+                            'type' => $data['type'],
+                        ])->refresh();
 
-                if (RulesIntersect::execute($doctorProfile, $av)) {
-                    return Response::json(['message' => 'conflicting rules'], 409);
-                }
+                        if (RulesIntersect::execute($doctorProfile, $av)) {
+                            throw new \RuntimeException('conflicting rules');
+                        }
 
-                $av->save();
-                $array[] = $av->refresh();
+                        $av->save();
+                        $array[] = $av;
+                    }
+
+                    return $array;
+                });
+            } catch (\RuntimeException $e) {
+                return Response::json(['message' => $e->getMessage()], 409);
             }
 
             return \response(AvailabilityResource::collection($array), 201);
@@ -108,20 +115,20 @@ class AvailabilityController extends Controller
             $availability->date = $data['new_date'] ?? $availability->date;
         }
 
-        $availability = DB::transaction(function () use ($availability, $doctorProfile) {
-            $availability->delete();
+        try {
+            $availability = DB::transaction(function () use ($availability, $doctorProfile) {
+                $availability->delete();
 
-            if (RulesIntersect::execute($doctorProfile, $availability)) {
-                return Response::json(['message' => 'conflicting rules'], 409);
-            }
+                if (RulesIntersect::execute($doctorProfile, $availability)) {
+                    throw new \RuntimeException();
+                }
 
-            $availability->save();
+                $availability->save();
 
-            return $availability->refresh();
-        });
-
-        if ($availability instanceof Response) {
-            return $availability;
+                return $availability->refresh();
+            });
+        } catch (\Throwable) {
+            return Response::json(['message' => 'conflicting rules'], 409);
         }
 
         return $availability->refresh()->toResource();
