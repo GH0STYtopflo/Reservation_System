@@ -26,15 +26,15 @@ class AppointmentDueTomorrow extends Notification implements ShouldQueue
         $doctor = $this->appointment->doctor;
 
         return (new MailMessage)
-            ->subject('Appointment Reminder - ' . config('app.name'))
-            ->greeting('Hello ' . $notifiable->name . '!')
+            ->subject('Appointment Reminder - '.config('app.name'))
+            ->greeting('Hello '.$notifiable->name.'!')
             ->line('This is a friendly reminder that you have an appointment scheduled for tomorrow.')
             ->line('**Appointment Details:**')
-            ->line('Doctor: ' . $doctor->name)
-            ->line('Date: ' . $this->appointment->start_at->format('l, F j, Y'))
-            ->line('Time: ' . $this->appointment->start_at->format('H:i'))
+            ->line('Doctor: '.$doctor->name)
+            ->line('Date: '.$this->appointment->start_at->format('l, F j, Y'))
+            ->line('Time: '.$this->appointment->start_at->format('H:i'))
             ->line('Please make sure to arrive on time.')
-            ->salutation('Best regards, ' . config('app.name'));
+            ->salutation('Best regards, '.config('app.name'));
     }
 
     public function toArray(object $notifiable): array

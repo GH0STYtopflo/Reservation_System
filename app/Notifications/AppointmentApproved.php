@@ -13,9 +13,7 @@ class AppointmentApproved extends Notification implements ShouldQueue
 {
     use Queueable;
 
-    public function __construct(public Appointment $appointment)
-    {
-    }
+    public function __construct(public Appointment $appointment) {}
 
     /**
      * Get the notification's delivery channels.
@@ -35,8 +33,8 @@ class AppointmentApproved extends Notification implements ShouldQueue
             ->subject('Appointment Approved')
             ->greeting('Hello!')
             ->line('Your appointment has been approved.')
-            ->line('**Doctor:** ' . $this->appointment->doctor->first_name . ' ' . $this->appointment->doctor->last_name)
-            ->line('**Date and time:** ' . $datetime->format('F j, Y \a\t g:i A'))
+            ->line('**Doctor:** '.$this->appointment->doctor->first_name.' '.$this->appointment->doctor->last_name)
+            ->line('**Date and time:** '.$datetime->format('F j, Y \a\t g:i A'))
             ->line('Thank you for using our application!');
     }
 
@@ -44,8 +42,8 @@ class AppointmentApproved extends Notification implements ShouldQueue
     {
         return [
             'appointment_id' => $this->appointment->id,
-            'doctor_name' => $this->appointment->doctor->first_name . ' ' . $this->appointment->doctor->last_name,
-            'start_at' => CarbonImmutable::parse($this->appointment->start_at,)->toIso8601String(),
+            'doctor_name' => $this->appointment->doctor->first_name.' '.$this->appointment->doctor->last_name,
+            'start_at' => CarbonImmutable::parse($this->appointment->start_at)->toIso8601String(),
             'message' => 'Your appointment has been approved.',
         ];
     }

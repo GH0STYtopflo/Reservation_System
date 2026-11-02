@@ -2,23 +2,19 @@
 
 use App\Enums\AvailabilityDefType;
 use App\Enums\Role;
-use App\Jobs\SendAppointmentNotification;
-use App\Models\Appointment;
 use App\Models\Availability;
 use App\Models\Unavailability;
 use App\Models\User;
-use App\Notifications\AppointmentDueTomorrow;
 use Illuminate\Console\Scheduling\Schedule as DayOfWeekSchedule;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 
-Artisan::command('inspire', function () {
+Artisan::command('inspire', function (): void {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-
-Schedule::call(function () {
-    DB::transaction(function () {
+Schedule::call(function (): void {
+    DB::transaction(function (): void {
         User::where('created_at', '<', now()->subDays(7))
             ->where('role', Role::DOCTOR->value)
             ->whereDoesntHave('doctorProfile')
@@ -34,8 +30,7 @@ Schedule::call(function () {
     ->description('Delete users who signed up but did not complete their profile within a week.')
     ->dailyAt('00:00');
 
-
-Schedule::call(function () {
+Schedule::call(function (): void {
     Availability::where('type', AvailabilityDefType::ONCE)
         ->where('date', '<', today())
         ->delete();
@@ -44,7 +39,7 @@ Schedule::call(function () {
     ->description('Delete expired one-time availabilities')
     ->weeklyOn(DayOfWeekSchedule::FRIDAY);
 
-Schedule::call(function () {
+Schedule::call(function (): void {
     Unavailability::where('end_at', '<', today())
         ->delete();
 })

@@ -16,19 +16,19 @@ class MedicalHistoryPolicy
             $user->role === Role::ADMIN ||
             $user->is($patientProfile->user) ||
             ($user->role === Role::DOCTOR && $user->doctorProfile->appointments()
-                    ->where('patient_id', $patientProfile->id)
-                    ->exists())
+                ->where('patient_id', $patientProfile->id)
+                ->exists())
         ) ? Response::allow() : Response::deny();
     }
 
-    public function vud(USer $user, MedicalHistory $medicalHistory): Response
+    public function vud(User $user, MedicalHistory $medicalHistory): Response
     {
         return (
             $user->role === Role::ADMIN ||
             $user->is($medicalHistory->patientProfile->user) ||
             ($user->role === Role::DOCTOR && $user->doctorProfile->appointments()
-                    ->where('patient_id', $medicalHistory->patientProfile->id)
-                    ->exists())
+                ->where('patient_id', $medicalHistory->patientProfile->id)
+                ->exists())
         ) ? Response::allow() : Response::deny();
     }
 }

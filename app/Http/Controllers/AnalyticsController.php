@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Appointment;
 use App\Models\DoctorProfile;
 use App\Models\PatientProfile;
-use Illuminate\Http\Request;
 
 class AnalyticsController extends Controller
 {
@@ -23,7 +22,6 @@ class AnalyticsController extends Controller
 
         $totalAppointments = Appointment::count();
         $appointmentsThisMonth = Appointment::whereMonth('created_at', date('m'))->count();
-
 
         return response()->json([
             'total_patients' => $totalPatients,

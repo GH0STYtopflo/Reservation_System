@@ -25,7 +25,7 @@ class PatientProfileController extends Controller
 
         if ($user->role !== Role::PATIENT) {
             return response()->json([
-                'message' => 'Only patients can have patient profile'
+                'message' => 'Only patients can have patient profile',
             ], 409);
         }
 

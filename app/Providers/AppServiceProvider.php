@@ -27,8 +27,6 @@ class AppServiceProvider extends ServiceProvider
         // We can be responsible about the data we feed into our model instances
         Model::unguard();
 
-
-
         // --------------------------------------------------------------------------------------
         // ---------------------------- Tier 1 authorization ------------------------------------
         // --------------------------------------------------------------------------------------
@@ -44,8 +42,6 @@ class AppServiceProvider extends ServiceProvider
             return $user->role === Role::PATIENT ? Response::allow() : Response::deny();
         });
         // --------------------------------------------------------------------------------------
-
-
 
         Gate::define('profile-exists', function (User $user) {
             if ($user->role === Role::DOCTOR && ! $user->doctorProfile()->exists()) {

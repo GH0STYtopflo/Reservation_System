@@ -21,12 +21,11 @@ class RuleHasAppointments implements Action
             $start = $date->setTimeFromTimeString(Carbon::parse($availability->shift_start_at)->toTimeString());
             $end = $date->setTimeFromTimeString(Carbon::parse($availability->shift_end_at)->toTimeString());
 
-
             if (
                 $doctorProfile->appointments()
                     ->whereNot('end_at', '<', $start)
                     ->whereNot('start_at', '>', $end)
-                ->exists()
+                    ->exists()
             ) {
                 return true;
             }
@@ -34,10 +33,9 @@ class RuleHasAppointments implements Action
 
         // At this point we know that the availability type is recurring.
         return $doctorProfile->appointments->contains(
-            fn (Appointment $appointment) =>
-                $availability->rrule->occursAt(
-                    Carbon::parse($appointment->start_at)->toDateString()
-                )
+            fn (Appointment $appointment): bool => $availability->rrule->occursAt(
+                Carbon::parse($appointment->start_at)->toDateString()
+            )
                 && RulesIntersect::hoursIntersect(
                     [
                         Carbon::parse($availability->shift_start_at)->toTimeString(),

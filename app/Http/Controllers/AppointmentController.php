@@ -13,11 +13,9 @@ use App\Http\Requests\Appointment\CancelAppointmentRequest;
 use App\Http\Requests\Appointment\RescheduleAppointmentRequest;
 use App\Http\Requests\Appointment\StoreAppointmentRequest;
 use App\Http\Requests\Appointment\UpdateAppointmentRequest;
-use App\Jobs\RemindAppointment;
 use App\Models\Appointment;
 use App\Models\DoctorProfile;
 use Auth;
-use Carbon\Carbon;
 use Carbon\CarbonImmutable;
 use Gate;
 use Illuminate\Support\Facades\DB;
@@ -28,7 +26,7 @@ class AppointmentController extends Controller
 {
     public function index()
     {
-        $user = \Auth::user();
+        $user = Auth::user();
 
         if ($user->role === Role::PATIENT) {
             return $user->patientProfile->appointments->toResourceCollection();
@@ -47,11 +45,11 @@ class AppointmentController extends Controller
 
         $doctor = DoctorProfile::find($data['doctor_id']);
 
-        $patient = \Auth::user()->patientProfile;
+        $patient = Auth::user()->patientProfile;
 
-        if (!AppointmentTimeValid::execute($datetime, $doctor)) {
+        if (! AppointmentTimeValid::execute($datetime, $doctor)) {
             return Response::json([
-                "message" => "The appointment time is not valid.",
+                'message' => 'The appointment time is not valid.',
             ],
                 409);
         }
@@ -63,7 +61,6 @@ class AppointmentController extends Controller
             'status' => AppointmentStatus::PENDING,
             'patient_note' => $data['patient_notes'],
         ]);
-
 
         event(new AppointmentReserved($app));
 
@@ -102,17 +99,16 @@ class AppointmentController extends Controller
             CarbonImmutable::parse($appointment->end_at)->lt(now())
         ) {
             return Response::json([
-                "message" => "The appointment cannot be rescheduled.",
+                'message' => 'The appointment cannot be rescheduled.',
             ], 409);
         }
 
-
         try {
-            $appointment = DB::transaction(function () use ($request, $appointment, $datetime, $user) {
+            $appointment = DB::transaction(function () use ($appointment, $datetime, $user) {
                 $appointment->delete();
 
-                if (!AppointmentTimeValid::execute($datetime, $appointment->doctor)) {
-                    throw new RuntimeException();
+                if (! AppointmentTimeValid::execute($datetime, $appointment->doctor)) {
+                    throw new RuntimeException;
                 }
 
                 $appointment->start_at = $datetime;
@@ -128,7 +124,7 @@ class AppointmentController extends Controller
             });
         } catch (\Throwable) {
             return Response::json([
-                "message" => "The appointment time is not valid.",
+                'message' => 'The appointment time is not valid.',
             ],
                 409);
         }
@@ -144,20 +140,20 @@ class AppointmentController extends Controller
 
         if (CarbonImmutable::parse($appointment->start_at)->lte(now()->addMinutes(15))) {
             return Response::json([
-                "message" => "The appointment cannot be cancelled.",
+                'message' => 'The appointment cannot be cancelled.',
             ],
                 409);
         }
 
         if ($appointment->status === AppointmentStatus::COMPLETED) {
             return Response::json([
-                "message" => "A completed appointment cannot be cancelled.",
+                'message' => 'A completed appointment cannot be cancelled.',
             ], 409);
         }
 
         if ($appointment->status === AppointmentStatus::CANCELLED) {
             return Response::json([
-                "message" => "Appointment already cancelled.",
+                'message' => 'Appointment already cancelled.',
             ], 409);
         }
 
@@ -179,7 +175,7 @@ class AppointmentController extends Controller
         if ($appointment->status === AppointmentStatus::CANCELLED ||
             CarbonImmutable::parse($appointment->start_at)->lt(now())) {
             return Response::json([
-                "message" => "The appointment cannot be approved.",
+                'message' => 'The appointment cannot be approved.',
             ], 409);
         }
 
@@ -199,7 +195,7 @@ class AppointmentController extends Controller
         if ($appointment->status === AppointmentStatus::CANCELLED ||
             CarbonImmutable::parse($appointment->start_at)->lt(now())) {
             return Response::json([
-                "message" => "The appointment cannot be completed.",
+                'message' => 'The appointment cannot be completed.',
             ], 409);
         }
 
@@ -213,7 +209,6 @@ class AppointmentController extends Controller
     public function destroy(Appointment $appointment)
     {
         $appointment->delete();
-
 
         return \response()->noContent();
     }

@@ -18,11 +18,10 @@ class AvailabilityPolicy
                 Response::allow() : Response::deny();
     }
 
-
     public function vud(User $user, Availability $availability): Response
     {
         return
-            ($availability->doctor->user->is($user)) ||
+            $availability->doctor->user->is($user) ||
             ($user->role === Role::ADMIN) ?
                 Response::allow() : Response::deny();
     }

@@ -65,6 +65,24 @@ class DoctorProfileController extends Controller
         return $profile->toResource();
     }
 
+    public function updateDoctorSpecialties(DoctorProfile $doctorProfile, UpdateDoctorSpecialtiesRequest $request)
+    {
+        Gate::authorize('update', $doctorProfile);
+
+        $doctorProfile->doctorSpecialties()->sync(array_values($request->validated()['specialty_ids']));
+
+        return $doctorProfile->load('doctorSpecialties')->unsetRelation('user')->toResource();
+    }
+
+    public function verifyDoctor(DoctorProfile $doctorProfile)
+    {
+        $doctorProfile->update([
+            'verified_at' => now(),
+        ]);
+
+        return $doctorProfile->refresh()->toResource();
+    }
+
     public function update(DoctorProfile $doctorProfile, UpdateDoctorProfileRequest $request)
     {
         Gate::authorize('update', $doctorProfile);
@@ -85,24 +103,5 @@ class DoctorProfileController extends Controller
         });
 
         return $doctorProfile->toResource();
-    }
-
-    public function updateDoctorSpecialties(DoctorProfile $doctorProfile, UpdateDoctorSpecialtiesRequest $request)
-    {
-        Gate::authorize('update', $doctorProfile);
-
-        $doctorProfile->doctorSpecialties()->sync(array_values($request->validated()['specialty_ids']));
-
-        return $doctorProfile->load('doctorSpecialties')->unsetRelation('user')->toResource();
-    }
-
-    public function verifyDoctor(DoctorProfile $doctorProfile)
-    {
-        $doctorProfile->update([
-            'verified_at' => now()
-        ]);
-
-
-        return $doctorProfile->refresh()->toResource();
     }
 }

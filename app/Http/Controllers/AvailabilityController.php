@@ -12,7 +12,6 @@ use App\Http\Requests\Availabilities\UpdateAvailabilityRequest;
 use App\Http\Resources\AvailabilityResource;
 use App\Models\Availability;
 use App\Models\DoctorProfile;
-use Carbon\Carbon;
 use Carbon\CarbonImmutable;
 use Gate;
 use Illuminate\Support\Facades\DB;
@@ -35,7 +34,7 @@ class AvailabilityController extends Controller
         $data = $request->validated();
 
         if ($data['type'] == AvailabilityDefType::RECURRING->value) {
-            $rstr = 'FREQ=WEEKLY;'.'BYDAY=' . implode(',', $data['days_of_week']);
+            $rstr = 'FREQ=WEEKLY;'.'BYDAY='.implode(',', $data['days_of_week']);
 
             $rule = new RRule($rstr, '00:00:00'); // cool we have a rrule instance.
 
@@ -120,7 +119,7 @@ class AvailabilityController extends Controller
                 $availability->delete();
 
                 if (RulesIntersect::execute($doctorProfile, $availability)) {
-                    throw new \RuntimeException();
+                    throw new \RuntimeException;
                 }
 
                 $availability->save();
@@ -155,7 +154,6 @@ class AvailabilityController extends Controller
             ->where('type', AvailabilityDefType::ONCE)
             ->where('date', $date->toAtomString())
             ->get();
-
 
         $availabilities = $availabilities->concat(
             $doctorProfile->availabilities

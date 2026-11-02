@@ -11,7 +11,7 @@ class UpdateAppointmentRequest extends FormRequest
         return [
             'patient_notes' => [
                 'nullable',
-                'string'
+                'string',
             ],
         ];
     }

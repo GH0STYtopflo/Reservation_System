@@ -6,17 +6,13 @@ use App\Events\AppointmentRescheduled;
 use App\Events\AppointmentReserved;
 use App\Jobs\RemindAppointment;
 use Carbon\CarbonImmutable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Queue\InteractsWithQueue;
 
 class QueueReminderNotification
 {
     /**
      * Create the event listener.
      */
-    public function __construct()
-    {
-    }
+    public function __construct() {}
 
     /**
      * Handle the event.

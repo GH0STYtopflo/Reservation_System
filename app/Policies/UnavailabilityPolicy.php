@@ -3,7 +3,6 @@
 namespace App\Policies;
 
 use App\Enums\Role;
-use App\Models\Availability;
 use App\Models\DoctorProfile;
 use App\Models\Unavailability;
 use App\Models\User;
@@ -19,11 +18,10 @@ class UnavailabilityPolicy
                 Response::allow() : Response::deny();
     }
 
-
     public function vud(User $user, Unavailability $unavailability): Response
     {
         return
-            ($unavailability->doctor->user->is($user)) ||
+            $unavailability->doctor->user->is($user) ||
             ($user->role === Role::ADMIN) ?
                 Response::allow() : Response::deny();
     }

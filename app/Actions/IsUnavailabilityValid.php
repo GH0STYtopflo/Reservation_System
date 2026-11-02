@@ -3,7 +3,6 @@
 namespace App\Actions;
 
 use App\Enums\AppointmentStatus;
-use App\Models\Appointment;
 use App\Models\DoctorProfile;
 use App\Models\Unavailability;
 

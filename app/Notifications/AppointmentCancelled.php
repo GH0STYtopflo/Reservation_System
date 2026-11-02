@@ -13,9 +13,7 @@ class AppointmentCancelled extends Notification implements ShouldQueue
 {
     use Queueable;
 
-    public function __construct(public Appointment $appointment)
-    {
-    }
+    public function __construct(public Appointment $appointment) {}
 
     /**
      * Get the notification's delivery channels.
@@ -36,8 +34,8 @@ class AppointmentCancelled extends Notification implements ShouldQueue
             ->subject('Appointment Cancelled')
             ->greeting('Hello!')
             ->line('Your appointment has been cancelled.')
-            ->line('**Doctor:** ' . $this->appointment->doctor->first_name . ' ' . $this->appointment->doctor->last_name)
-            ->line('**Date and time:** ' . $datetime->format('F j, Y \a\t g:i A'))
+            ->line('**Doctor:** '.$this->appointment->doctor->first_name.' '.$this->appointment->doctor->last_name)
+            ->line('**Date and time:** '.$datetime->format('F j, Y \a\t g:i A'))
             ->line('If you have any questions, please contact us.'); // Yeah like we have contact info available
     }
 
@@ -45,7 +43,7 @@ class AppointmentCancelled extends Notification implements ShouldQueue
     {
         return [
             'appointment_id' => $this->appointment->id,
-            'doctor_name' => $this->appointment->doctor->first_name . ' ' . $this->appointment->doctor->last_name,
+            'doctor_name' => $this->appointment->doctor->first_name.' '.$this->appointment->doctor->last_name,
             'start_at' => CarbonImmutable::parse(
                 $this->appointment->start_at)->toIso8601String(),
             'message' => 'Your appointment has been cancelled.',

@@ -4,7 +4,6 @@ namespace App\Actions;
 
 use App\Enums\AvailabilityDefType;
 use App\Models\DoctorProfile;
-use Carbon\Carbon;
 use Carbon\CarbonImmutable;
 
 class AppointmentTimeValid implements Action
@@ -18,11 +17,11 @@ class AppointmentTimeValid implements Action
 
         $availabilities = $availabilities->concat(
             $doctor->availabilities()
-            ->where('type', AvailabilityDefType::RECURRING)
-            ->get()
-            ->filter(function ($availability) use ($availabilities, $datetime) {
-                return $availability->rrule->occursAt($datetime->toDateString());
-            })
+                ->where('type', AvailabilityDefType::RECURRING)
+                ->get()
+                ->filter(function ($availability) use ($datetime) {
+                    return $availability->rrule->occursAt($datetime->toDateString());
+                })
         );
 
         if ($availabilities->isEmpty()) {
@@ -30,9 +29,9 @@ class AppointmentTimeValid implements Action
         }
 
         foreach ($availabilities as $availability) {
-            $slots = MakeSlots::execute($availability, $datetime->setTime(0 ,0));
+            $slots = MakeSlots::execute($availability, $datetime->setTime(0, 0));
 
-            if (!empty(array_intersect($slots, [$datetime->toTimeString()]))) {
+            if (! empty(array_intersect($slots, [$datetime->toTimeString()]))) {
                 return true;
             }
         }

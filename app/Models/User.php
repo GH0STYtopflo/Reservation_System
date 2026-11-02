@@ -10,12 +10,11 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
+#[\Illuminate\Database\Eloquent\Attributes\Hidden(['password'])]
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
     use HasApiTokens, HasFactory, Notifiable;
-
-    protected $hidden = ['password'];
 
     protected $attributes = [
         'role' => Role::PATIENT,

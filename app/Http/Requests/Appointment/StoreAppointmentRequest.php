@@ -14,19 +14,19 @@ class StoreAppointmentRequest extends FormRequest
             'datetime' => [
                 'required',
                 Rule::dateTime(),
-                'after_or_equal:today'
+                'after_or_equal:today',
             ],
 
             'patient_notes' => [
                 'nullable',
-                'string'
+                'string',
             ],
 
             'doctor_id' => [
                 Rule::requiredIf(function () {
                     return \Auth::user()->role === Role::PATIENT;
                 }),
-                'exists:doctor_profiles,id'
+                'exists:doctor_profiles,id',
             ],
         ];
     }

@@ -16,8 +16,8 @@ class StoreAvailabilityRequest extends FormRequest
                 'in:recurring,once',
             ],
             'days_of_week' => [
-                Rule::requiredIf(fn () => $this->type === 'recurring'),
-                Rule::prohibitedIf(fn () => $this->type === 'once'),
+                Rule::requiredIf(fn (): bool => $this->type === 'recurring'),
+                Rule::prohibitedIf(fn (): bool => $this->type === 'once'),
                 'array',
                 'min:1',
             ],
@@ -28,8 +28,8 @@ class StoreAvailabilityRequest extends FormRequest
                 'distinct',
             ],
             'dates' => [
-                Rule::requiredIf(fn () => $this->type === 'once'),
-                Rule::prohibitedIf(fn () => $this->type === 'recurring'),
+                Rule::requiredIf(fn (): bool => $this->type === 'once'),
+                Rule::prohibitedIf(fn (): bool => $this->type === 'recurring'),
                 'array',
                 'min:1',
             ],

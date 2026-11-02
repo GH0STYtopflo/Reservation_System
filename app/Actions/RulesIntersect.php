@@ -16,7 +16,7 @@ class RulesIntersect implements Action
             $avRecurring = $av->type === AvailabilityDefType::RECURRING;
             $newRecurring = $new->type === AvailabilityDefType::RECURRING;
 
-            if (! ($avRecurring || $newRecurring)) {
+            if (!$avRecurring && !$newRecurring) {
                 if (Carbon::parse($av->date)->format('Y-m-d') !== Carbon::parse($new->date)->format('Y-m-d')) {
                     continue;
                 }
@@ -58,6 +58,6 @@ class RulesIntersect implements Action
 
     public static function hoursIntersect(array $h, array $hNew): bool
     {
-        return ! ($hNew[1] < $h[0] || $hNew[0] > $h[1]);
+        return $hNew[1] >= $h[0] && $hNew[0] <= $h[1];
     }
 }

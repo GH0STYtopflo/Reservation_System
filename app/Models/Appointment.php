@@ -12,13 +12,6 @@ class Appointment extends Model
         'status' => AppointmentStatus::PENDING,
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'status' => AppointmentStatus::class,
-        ];
-    }
-
     public function doctor(): BelongsTo
     {
         return $this->belongsTo(DoctorProfile::class, 'doctor_id');
@@ -32,5 +25,12 @@ class Appointment extends Model
     public function appointmentType(): BelongsTo
     {
         return $this->belongsTo(AppointmentType::class);
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'status' => AppointmentStatus::class,
+        ];
     }
 }
