@@ -66,3 +66,6 @@ git clone https://github.com/GH0STYtopflo/Reservation_System.git
 cd Reservation_System
 cp .env.example .env
 docker compose up --build
+```
+
+Make sure you generate an app specific private key according to the instructions in the example env file
